@@ -2,6 +2,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.cs550.teama.spotflickr">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
+    <meta-data
+        android:name="com.kakao.sdk.AppKey"
+        android:value="3374c3df8ec833735221f98bd57a082a" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -18,9 +25,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.login.LoginActivity"/>
-        <activity android:name=".login.BaseActivity"/>
-        <activity android:name=".login.SignupActivity"/>
+        <activity android:name=".login.SignupActivity" />
+        <activity android:name=".login.MapActivity"></activity>
     </application>
 
 </manifest>

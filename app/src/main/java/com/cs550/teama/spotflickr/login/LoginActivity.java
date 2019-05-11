@@ -2,60 +2,102 @@ package com.cs550.teama.spotflickr.login;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v7.app.AppCompatActivity;
+import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cs550.teama.spotflickr.R;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-public class LoginActivity extends BaseActivity {
+import org.w3c.dom.Text;
 
-    public static final String TAG = "LoginActivity";
+public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private EditText emailField;
-    private EditText passwordField;
-    private Button btnLogin;
-
-    private FirebaseAuth mAuth;
+    FirebaseAuth mAuth;
+    EditText editTextEmail, editTextPassword;
+    ProgressBar progressBar;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        emailField = (EditText) findViewById(R.id.login_email);
-        passwordField = (EditText) findViewById(R.id.login_password);
-        btnLogin = (Button) findViewById(R.id.login_button);
-
-        // Initialize Firebase Auth
         mAuth = FirebaseAuth.getInstance();
 
-        btnLogin.setOnClickListener(new View.OnClickListener() {
+        editTextEmail = (EditText) findViewById(R.id.editTextEmail);
+        editTextPassword = (EditText) findViewById(R.id.editTextPassword);
+        progressBar = (ProgressBar) findViewById(R.id.progressbar);
+
+        findViewById(R.id.textViewSignup).setOnClickListener(this);
+        findViewById(R.id.buttonLogin).setOnClickListener(this);
+    }
+
+    private void userLogin() {
+        String email = editTextEmail.getText().toString().trim();
+        String password = editTextPassword.getText().toString().trim();
+
+        if (email.isEmpty()) {
+            editTextEmail.setError("Email is required.");
+            editTextEmail.requestFocus();
+            return;
+        }
+
+        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            editTextEmail.setError("Please enter a valid email");
+            editTextEmail.requestFocus();
+            return;
+        }
+
+        if (password.isEmpty()) {
+            editTextPassword.setError("Password is required.");
+            editTextPassword.requestFocus();
+            return;
+        }
+
+        if (password.length() < 10) {
+            editTextPassword.setError("Minimum length of password should be 10");
+            editTextPassword.requestFocus();
+            return;
+        }
+
+        progressBar.setVisibility(View.VISIBLE);
+
+
+        mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
-            public void onClick(View v) {
-                startActivity(new Intent(LoginActivity.this, SignupActivity.class));
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                progressBar.setVisibility(View.GONE);
+                if (task.isSuccessful()) {
+                    Intent intent = new Intent(LoginActivity.this, MapActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(intent);
+                } else {
+                    Toast.makeText(getApplicationContext(), task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        // Check if user is signed in (non-null) and update UI accordingly.
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        updateUI(currentUser);
-    }
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.textViewSignup:
+                startActivity(new Intent(this, SignupActivity.class));
+                break;
+            case R.id.buttonLogin:
+                userLogin();
+                break;
+        }
 
-    private void signOut() {
-        mAuth.signOut();
-        updateUI(null);
-    }
-
-    private void updateUI(FirebaseUser currentUser) {
-        String welcome = getString(R.string.welcome);
-        Toast.makeText(getApplicationContext(), welcome, Toast.LENGTH_LONG).show();
     }
 }
