@@ -6,4 +6,9 @@
     android:layout_height="match_parent"
     tools:context=".login.MapActivity">
 
+    <fragment android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/map_view"
+        android:name="com.naver.maps.map.MapFragment" />
+
 </android.support.constraint.ConstraintLayout>
