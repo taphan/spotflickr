@@ -88,7 +88,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             public void onComplete(@NonNull Task<AuthResult> task) {
                 progressBar.setVisibility(View.GONE);
                 if (task.isSuccessful()) {
-                    Intent intent = new Intent(LoginActivity.this, MapActivity.class);
+                    Intent intent = new Intent(LoginActivity.this, MapFragmentActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(intent);
                 } else {
@@ -108,7 +108,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 userLogin();
                 break;
             case R.id.map_button:
-                Intent intent = new Intent(view.getContext(), MapActivity.class);
+                Intent intent = new Intent(view.getContext(), MapFragmentActivity.class);
                 startActivity(intent);
                 break;
         }

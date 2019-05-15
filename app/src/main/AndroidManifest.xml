@@ -24,7 +24,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".login.SignupActivity" />
-        <activity android:name=".login.MapActivity"></activity>
+        <activity android:name=".login.MapFragmentActivity"></activity>
+
     </application>
 
 </manifest>
