@@ -20,6 +20,7 @@ import com.naver.maps.map.MapFragment;
 import com.naver.maps.map.NaverMap;
 import com.naver.maps.map.OnMapReadyCallback;
 import com.naver.maps.map.UiSettings;
+import com.naver.maps.map.overlay.InfoWindow;
 import com.naver.maps.map.overlay.LocationOverlay;
 import com.naver.maps.map.overlay.Marker;
 import com.naver.maps.map.util.FusedLocationSource;
@@ -148,6 +149,7 @@ public class MapFragmentActivity extends FragmentActivity implements OnMapReadyC
                 Response response = client.newCall(request).execute();
                 String body = response.body().string();
                 String json_body = body.substring(14, body.length()-1);
+
                 JSONArray placeList = new JSONObject(json_body).getJSONObject("places").getJSONArray("place");
                 this.placeLIst = placeList;
             } catch (IOException e) {
@@ -173,10 +175,25 @@ public class MapFragmentActivity extends FragmentActivity implements OnMapReadyC
             System.out.println(this.placeLIst);
             for (int i = 0; i < this.placeLIst.length(); i++) {
                 try {
-                    JSONObject place= this.placeLIst.getJSONObject(i);
+                    final JSONObject place= this.placeLIst.getJSONObject(i);
                     Marker marker = new Marker();
                     marker.setPosition(new LatLng(place.getDouble("latitude"),place.getDouble("longitude")));
                     marker.setMap(naverMap);
+                    InfoWindow infoWindow = new InfoWindow();
+                    infoWindow.setAdapter(new InfoWindow.DefaultTextAdapter(getApplicationContext()) {
+                        @NonNull
+                        @Override
+                        public CharSequence getText(@NonNull InfoWindow infoWindow) {
+                            try {
+                                return place.getString("_content");
+
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            return null;
+                        }
+                    });
+                    infoWindow.open(marker);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
