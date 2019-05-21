@@ -8,9 +8,17 @@
     tools:context="com.cs550.teama.spotflickr.api.MainActivity"
     tools:showIn="@layout/activity_main">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/recycler_view_notice_list"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+    <!--<android.support.v7.widget.RecyclerView-->
+        <!--android:id="@+id/recycler_view_notice_list"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"/>-->
+
+    <ListView
+        android:id="@+id/list_view"
+        android:layout_width="395dp"
+        android:layout_height="515dp"
+        tools:layout_editor_absoluteX="8dp"
+        tools:layout_editor_absoluteY="8dp"
+        tools:ignore="MissingConstraints" />
 
 </android.support.constraint.ConstraintLayout>

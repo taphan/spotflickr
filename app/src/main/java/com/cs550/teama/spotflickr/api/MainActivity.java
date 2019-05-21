@@ -3,13 +3,14 @@ package com.cs550.teama.spotflickr.api;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.cs550.teama.spotflickr.R;
+import com.cs550.teama.spotflickr.adapter.ImageListAdapter;
 import com.cs550.teama.spotflickr.adapter.PhotoAdapter;
 import com.cs550.teama.spotflickr.model.Photo;
 import com.cs550.teama.spotflickr.model.Photos;
@@ -18,8 +19,10 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -27,14 +30,17 @@ import retrofit2.Response;
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
     private static final String API_KEY = "c78af6829b82ef76418e7563ee33fe85";
+    private Context context;
 
     private PhotoAdapter adapter;
     private RecyclerView recyclerView;
+    private ListView listView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        context = this;
         Log.d(TAG, "1st log");
 
         /** Create handle for the RetrofitInstance interface*/
@@ -46,18 +52,36 @@ public class MainActivity extends AppCompatActivity {
         query.put("api_key", API_KEY);
         query.put("format", "json");
         query.put("nojsoncallback", "1");
-        Call<Photos> call = service.getRecentPhotos(query);
-        final Context context = this;
+        Call<Photos> photoCall = service.getRecentPhotos(query);
+        Call<ResponseBody> call = service.getPhotoFromUrl("https://farm66.staticflickr.com/65535/40934234293_9226cfebcf.jpg");
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                try {
+                    Log.d("onResponse", "Response came from server");
+                    ImageView image = (ImageView) findViewById(R.id.image);
+                    loadImage(context, "https://farm66.staticflickr.com/65535/40934234293_9226cfebcf.jpg", image);
 
-        call.enqueue(new Callback<Photos>() {
+                } catch (Exception e) {
+                    Log.d("onResponse", "There is an error");
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Log.d("onFailure", t.toString());
+
+            }
+        });
+        photoCall.enqueue(new Callback<Photos>() {
             @Override
             public void onResponse(Call<Photos> call, Response<Photos> response) {
                 generatePhotoList(response.body().getPhotos().getPhoto());
                 Log.d(TAG, response.body().getPhotos().getPages().toString());
                 ImageView image = (ImageView) findViewById(R.id.image);
-                Picasso.with(context)
-                        .load("https://farm66.staticflickr.com/65535/40934234293_9226cfebcf.jpg")
-                        .into(image);
+                ArrayList<Photo> photoArrayList = response.body().getPhotos().getPhoto();
+
             }
 
             @Override
@@ -66,15 +90,49 @@ public class MainActivity extends AppCompatActivity {
                 Log.d(TAG, "onFailure: " + t.getMessage());
             }
         });
+
     }
 
     /** Method to generate List of photos using RecyclerView with custom adapter*/
     private void generatePhotoList(ArrayList<Photo> photoArrayList) {
-        recyclerView = findViewById(R.id.recycler_view_notice_list);
-        adapter = new PhotoAdapter(photoArrayList);
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(MainActivity.this);
-        recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setAdapter(adapter);
+//        recyclerView = findViewById(R.id.recycler_view_notice_list);
+//        adapter = new PhotoAdapter(photoArrayList);
+//        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(MainActivity.this);
+//        recyclerView.setLayoutManager(layoutManager);
+//        recyclerView.setAdapter(adapter);
+
+        List<String> urls = new ArrayList<>();
+        for (int i = 0; i < photoArrayList.size(); i++) {
+            Photo photo = photoArrayList.get(i);
+            urls.add(buildPhotoUrl(
+                    String.valueOf(photo.getFarm()),
+                    photo.getServer(),
+                    photo.getId(),
+                    photo.getSecret()
+            ));
+        }
+        listView = findViewById(R.id.list_view);
+        listView.setAdapter(new ImageListAdapter(MainActivity.this, urls));
     }
 
+    private void loadImage(Context context, String path, ImageView image) {
+        Picasso.with(context)
+                .load(path)
+                .into(image);
+    }
+
+    // Build URL in the form: https://farm{farm-id}.staticflickr.com/{server-id}/{id}_{secret}.jpg
+    private String buildPhotoUrl(String farmId, String serverId, String id, String secret) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("https://farm");
+        sb.append(farmId);
+        sb.append(".staticflickr.com/");
+        sb.append(serverId);
+        sb.append("/");
+        sb.append(id);
+        sb.append("_");
+        sb.append(secret);
+        sb.append(".jpg");
+        return sb.toString();
+    }
 }
