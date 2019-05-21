@@ -1,10 +1,12 @@
 package com.cs550.teama.spotflickr.api;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.cs550.teama.spotflickr.R;
@@ -12,6 +14,7 @@ import com.cs550.teama.spotflickr.adapter.PhotoAdapter;
 import com.cs550.teama.spotflickr.model.Photo;
 import com.cs550.teama.spotflickr.model.Photos;
 import com.cs550.teama.spotflickr.network.RetrofitInstance;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -44,15 +47,17 @@ public class MainActivity extends AppCompatActivity {
         query.put("format", "json");
         query.put("nojsoncallback", "1");
         Call<Photos> call = service.getRecentPhotos(query);
-
-        /**Log the URL called*/
-        Log.d("URL Called", call.request().url() + "");
+        final Context context = this;
 
         call.enqueue(new Callback<Photos>() {
             @Override
             public void onResponse(Call<Photos> call, Response<Photos> response) {
                 generatePhotoList(response.body().getPhotos().getPhoto());
                 Log.d(TAG, response.body().getPhotos().getPages().toString());
+                ImageView image = (ImageView) findViewById(R.id.image);
+                Picasso.with(context)
+                        .load("https://farm66.staticflickr.com/65535/40934234293_9226cfebcf.jpg")
+                        .into(image);
             }
 
             @Override

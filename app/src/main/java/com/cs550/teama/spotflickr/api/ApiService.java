@@ -11,4 +11,5 @@ import retrofit2.http.QueryMap;
 public interface ApiService {
     @GET(".")
     Call<Photos> getRecentPhotos(@QueryMap Map<String, String> options);
+
 }
