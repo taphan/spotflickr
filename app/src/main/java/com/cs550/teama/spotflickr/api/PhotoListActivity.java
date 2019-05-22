@@ -22,13 +22,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivity extends AppCompatActivity {
-    private static final String TAG = "MainActivity";
+public class PhotoListActivity extends AppCompatActivity {
+    private static final String TAG = "PhotoListActivity";
     private static final String API_KEY = "c78af6829b82ef76418e7563ee33fe85";
     private Context context;
 
@@ -43,61 +42,42 @@ public class MainActivity extends AppCompatActivity {
         context = this;
         Log.d(TAG, "1st log");
 
-        /** Create handle for the RetrofitInstance interface*/
+        /* Create handle for the RetrofitInstance interface*/
         ApiService service = RetrofitInstance.getRetrofitInstance().create(ApiService.class);
 
-        /** Call the method with parameter in the interface to get the notice data*/
-        Map<String, String> query = new HashMap<>();
-        query.put("method", "flickr.photos.getRecent");
-        query.put("api_key", API_KEY);
-        query.put("format", "json");
-        query.put("nojsoncallback", "1");
-        Call<Photos> photoCall = service.getRecentPhotos(query);
-        Call<ResponseBody> call = service.getPhotoFromUrl("https://farm66.staticflickr.com/65535/40934234293_9226cfebcf.jpg");
-        call.enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                try {
-                    Log.d("onResponse", "Response came from server");
-                    ImageView image = (ImageView) findViewById(R.id.image);
-                    loadImage(context, "https://farm66.staticflickr.com/65535/40934234293_9226cfebcf.jpg", image);
+        /* Call the method with parameter in the interface to get the notice data*/
+        Map<String, String> query = getQuery();
+        Call<Photos> call = service.getRecentPhotos(query);
 
-                } catch (Exception e) {
-                    Log.d("onResponse", "There is an error");
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Log.d("onFailure", t.toString());
-
-            }
-        });
-        photoCall.enqueue(new Callback<Photos>() {
+        call.enqueue(new Callback<Photos>() {
             @Override
             public void onResponse(Call<Photos> call, Response<Photos> response) {
                 generatePhotoList(response.body().getPhotos().getPhoto());
-                Log.d(TAG, response.body().getPhotos().getPages().toString());
-                ImageView image = (ImageView) findViewById(R.id.image);
-                ArrayList<Photo> photoArrayList = response.body().getPhotos().getPhoto();
-
             }
 
             @Override
             public void onFailure(Call<Photos> call, Throwable t) {
-                Toast.makeText(MainActivity.this, "Something went wrong...Error message: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(PhotoListActivity.this, "Something went wrong...Error message: " + t.getMessage(), Toast.LENGTH_SHORT).show();
                 Log.d(TAG, "onFailure: " + t.getMessage());
             }
         });
 
     }
 
+    private Map<String, String> getQuery() {
+        Map<String, String> query = new HashMap<>();
+        query.put("method", "flickr.photos.getRecent");
+        query.put("api_key", API_KEY);
+        query.put("format", "json");
+        query.put("nojsoncallback", "1");
+        return query;
+    }
+
     /** Method to generate List of photos using RecyclerView with custom adapter*/
     private void generatePhotoList(ArrayList<Photo> photoArrayList) {
 //        recyclerView = findViewById(R.id.recycler_view_notice_list);
 //        adapter = new PhotoAdapter(photoArrayList);
-//        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(MainActivity.this);
+//        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(PhotoListActivity.this);
 //        recyclerView.setLayoutManager(layoutManager);
 //        recyclerView.setAdapter(adapter);
 
@@ -112,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
             ));
         }
         listView = findViewById(R.id.list_view);
-        listView.setAdapter(new ImageListAdapter(MainActivity.this, urls));
+        listView.setAdapter(new ImageListAdapter(PhotoListActivity.this, urls));
     }
 
     private void loadImage(Context context, String path, ImageView image) {

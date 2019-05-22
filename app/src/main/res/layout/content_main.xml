@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.cs550.teama.spotflickr.api.MainActivity"
+    tools:context="com.cs550.teama.spotflickr.api.PhotoListActivity"
     tools:showIn="@layout/activity_main">
 
     <!--<android.support.v7.widget.RecyclerView-->
@@ -15,10 +15,10 @@
 
     <ListView
         android:id="@+id/list_view"
-        android:layout_width="395dp"
-        android:layout_height="515dp"
-        tools:layout_editor_absoluteX="8dp"
-        tools:layout_editor_absoluteY="8dp"
-        tools:ignore="MissingConstraints" />
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="MissingConstraints"
+        tools:layout_editor_absoluteX="85dp" />
 
 </android.support.constraint.ConstraintLayout>
