@@ -68,24 +68,86 @@ public class OAuthService {
 
     private String getRequestTokenUrl() {
         String requestTokenUrl = "https://www.flickr.com/services/oauth/request_token/";
+
+        String nonceParam = getNonceParam();
+        String callbackParam = getCallbackParam();
+        String apiKeyParam = getApiKeyParam();
+        String signatureMethodParam = getSignatureMethodParam();
+        String timestampParam = getTimeStampParam();
+        String versionParam = getVersionParam();
+
         String baseString1 = "GET";
         String baseString2 = oauthEncode(requestTokenUrl);
-        String nonce = "flickr_oauth" + String.valueOf(System.currentTimeMillis());
-        String timestamp = String.valueOf(System.currentTimeMillis()/1000);
-        String callbackParam = "oauth_callback=";
-        String apiKeyParam = "oauth_consumer_key=" + API_KEY; //your apiKey from flickr
-        String nonceParam = "oauth_nonce=" + nonce;
-        String signatureMethodParam = "oauth_signature_method=" + "HMAC-SHA1";
-        String timestampParam = "oauth_timestamp=" + timestamp;
-        String versionParam = "oauth_version=" + "1.0";
         String unencBaseString3 = callbackParam + "&" + apiKeyParam + "&" + nonceParam + "&" + signatureMethodParam + "&" + timestampParam + "&" + versionParam;
+
         String baseString3 = oauthEncode(unencBaseString3);
         String baseString = baseString1 + "&" + baseString2 + "&" + baseString3;
+
         String signature = getSignature(SIGNATURE_KEY, baseString);
         String signatureParam = "oauth_signature=" + oauthEncode(signature);
         return requestTokenUrl + "?" + callbackParam + "&" + apiKeyParam + "&" +
                 nonceParam + "&" + timestampParam + "&" + signatureMethodParam + "&" +
                 versionParam + "&" + signatureParam;
+    }
+
+    private String getAccessTokenUrl() {
+        String requestTokenUrl = "https://www.flickr.com/services/oauth/access_token/";
+
+        String nonceParam = getNonceParam();
+        String timestampParam = getTimeStampParam();
+        String verifierParam = getVerifierParam();
+        String tokenParam = getTokenParam();
+        String apiKeyParam = getApiKeyParam();
+        String signatureMethodParam = getSignatureMethodParam();
+        String versionParam = getVersionParam();
+
+        String baseString1 = "GET";
+        String baseString2 = oauthEncode(requestTokenUrl);
+        String unencBaseString3 = tokenParam + "&" + verifierParam + "&" + apiKeyParam + "&" + nonceParam + "&" + signatureMethodParam + "&" + timestampParam + "&" + versionParam;
+
+        String baseString3 = oauthEncode(unencBaseString3);
+        String baseString = baseString1 + "&" + baseString2 + "&" + baseString3;
+
+        String signature = getSignature(SIGNATURE_KEY, baseString);
+        String signatureParam = "oauth_signature=" + oauthEncode(signature);
+        return requestTokenUrl + "?" + tokenParam + "&" + verifierParam  + "&" + apiKeyParam + "&" +
+                nonceParam + "&" + timestampParam + "&" + signatureMethodParam + "&" +
+                versionParam + "&" + signatureParam;
+    }
+
+    private String getVerifierParam() {
+        return "oauth_verifier=";
+    }
+
+    // TODO: Update when stage 2 is completed
+    private String getTokenParam() {
+        return "oauth_token=" + requestTokenResponse.get("oauth_token");
+    }
+
+    private String getNonceParam() {
+        String nonce = "flickr_oauth" + String.valueOf(System.currentTimeMillis());
+        return "oauth_nonce=" + nonce;
+    }
+
+    private String getCallbackParam() {
+        return "oauth_callback=";
+    }
+
+    private String getApiKeyParam() {
+        return "oauth_consumer_key=" + API_KEY;
+    }
+
+    private String getSignatureMethodParam() {
+        return "oauth_signature_method=" + "HMAC-SHA1";
+    }
+
+    private String getVersionParam() {
+        return "oauth_version=" + "1.0";
+    }
+
+    private String getTimeStampParam() {
+        String timestamp = String.valueOf(System.currentTimeMillis()/1000);
+        return "oauth_timestamp=" + timestamp;
     }
 
     private void getRequestToken() {
