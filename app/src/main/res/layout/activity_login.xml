@@ -95,8 +95,18 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
+            android:layout_marginLeft="100dp"
             android:layout_marginTop="441dp"
             android:text="Map" />
+
+        <Button
+            android:id="@+id/photo_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="200dp"
+            android:layout_marginTop="441dp"
+            android:text="Photo" />
     </RelativeLayout>
 
 </LinearLayout>

@@ -18,6 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cs550.teama.spotflickr.R;
+import com.cs550.teama.spotflickr.api.PhotoListActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -49,6 +50,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         findViewById(R.id.textViewSignup).setOnClickListener(this);
         findViewById(R.id.buttonLogin).setOnClickListener(this);
         findViewById(R.id.map_button).setOnClickListener(this);
+        findViewById(R.id.photo_button).setOnClickListener(this);
 
     }
 
@@ -100,6 +102,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     @Override
     public void onClick(View view) {
+        Intent intent;
         switch (view.getId()) {
             case R.id.textViewSignup:
                 startActivity(new Intent(this, SignupActivity.class));
@@ -108,7 +111,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 userLogin();
                 break;
             case R.id.map_button:
-                Intent intent = new Intent(view.getContext(), MapFragmentActivity.class);
+                intent = new Intent(view.getContext(), MapFragmentActivity.class);
+                startActivity(intent);
+                break;
+            case R.id.photo_button:
+                intent = new Intent(view.getContext(), PhotoListActivity.class);
                 startActivity(intent);
                 break;
         }
