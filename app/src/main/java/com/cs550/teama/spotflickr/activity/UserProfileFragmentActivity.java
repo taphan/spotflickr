@@ -1,4 +1,4 @@
-package com.cs550.teama.spotflickr.login;
+package com.cs550.teama.spotflickr.activity;
 
 import android.content.Intent;
 import android.support.annotation.NonNull;

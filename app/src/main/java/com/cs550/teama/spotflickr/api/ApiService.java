@@ -15,4 +15,6 @@ public interface ApiService {
     Call<Photos> getRecentPhotos(@QueryMap Map<String, String> options);
     @GET
     Call<ResponseBody> getPhotoFromUrl(@Url String url);
+    @GET
+    Call<ResponseBody> getOAuth(@Url String url);
 }

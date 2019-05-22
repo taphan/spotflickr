@@ -1,21 +1,20 @@
-package com.cs550.teama.spotflickr.api;
+package com.cs550.teama.spotflickr.activity;
 
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import com.cs550.teama.spotflickr.R;
 import com.cs550.teama.spotflickr.adapter.ImageListAdapter;
 import com.cs550.teama.spotflickr.adapter.PhotoAdapter;
+import com.cs550.teama.spotflickr.api.ApiService;
 import com.cs550.teama.spotflickr.model.Photo;
 import com.cs550.teama.spotflickr.model.Photos;
 import com.cs550.teama.spotflickr.network.RetrofitInstance;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -40,7 +39,6 @@ public class PhotoListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_photo_list);
         context = this;
-        Log.d(TAG, "1st log");
 
         /* Create handle for the RetrofitInstance interface*/
         ApiService service = RetrofitInstance.getRetrofitInstance().create(ApiService.class);
@@ -93,12 +91,6 @@ public class PhotoListActivity extends AppCompatActivity {
         }
         listView = findViewById(R.id.list_view);
         listView.setAdapter(new ImageListAdapter(PhotoListActivity.this, urls));
-    }
-
-    private void loadImage(Context context, String path, ImageView image) {
-        Picasso.with(context)
-                .load(path)
-                .into(image);
     }
 
     // Build URL in the form: https://farm{farm-id}.staticflickr.com/{server-id}/{id}_{secret}.jpg
