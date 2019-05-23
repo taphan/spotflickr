@@ -16,7 +16,6 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.cs550.teama.spotflickr.R;
-import com.cs550.teama.spotflickr.api.OAuthService;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -46,8 +45,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         findViewById(R.id.buttonLogin).setOnClickListener(this);
         findViewById(R.id.map_button).setOnClickListener(this);
         findViewById(R.id.photo_button).setOnClickListener(this);
-
-        OAuthService oAuthService = new OAuthService();
+        findViewById(R.id.oauth_button).setOnClickListener(this);
     }
 
     private void userLogin() {
@@ -112,6 +110,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 break;
             case R.id.photo_button:
                 intent = new Intent(view.getContext(), PhotoListActivity.class);
+                startActivity(intent);
+                break;
+            case R.id.oauth_button:
+                intent = new Intent(view.getContext(), EmptyOAuthActivity.class);
                 startActivity(intent);
                 break;
         }

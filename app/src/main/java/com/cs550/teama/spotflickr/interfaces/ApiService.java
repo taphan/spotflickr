@@ -1,4 +1,4 @@
-package com.cs550.teama.spotflickr.api;
+package com.cs550.teama.spotflickr.interfaces;
 
 import com.cs550.teama.spotflickr.model.Photos;
 
@@ -17,4 +17,8 @@ public interface ApiService {
     Call<ResponseBody> getPhotoFromUrl(@Url String url);
     @GET
     Call<ResponseBody> getOAuth(@Url String url);
+    @GET("/request_token")
+    Call<ResponseBody> getOAuthRequestToken(@QueryMap Map<String, String> options);
+    @GET("/access_token")
+    Call<ResponseBody> getOAuthAccessToken(@QueryMap Map<String, String> options);
 }

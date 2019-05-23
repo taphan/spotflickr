@@ -107,6 +107,14 @@
             android:layout_marginLeft="200dp"
             android:layout_marginTop="441dp"
             android:text="Photo" />
+
+        <Button
+            android:id="@+id/oauth_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="150dp"
+            android:layout_marginTop="480dp"
+            android:text="OAuth" />
     </RelativeLayout>
 
 </LinearLayout>

@@ -11,7 +11,7 @@ import android.widget.Toast;
 import com.cs550.teama.spotflickr.R;
 import com.cs550.teama.spotflickr.adapter.ImageListAdapter;
 import com.cs550.teama.spotflickr.adapter.PhotoAdapter;
-import com.cs550.teama.spotflickr.api.ApiService;
+import com.cs550.teama.spotflickr.interfaces.ApiService;
 import com.cs550.teama.spotflickr.model.Photo;
 import com.cs550.teama.spotflickr.model.Photos;
 import com.cs550.teama.spotflickr.network.RetrofitInstance;

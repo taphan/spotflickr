@@ -11,11 +11,12 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class RetrofitOAuthInstance {
 
     private static Retrofit retrofit;
+    private static final String BASE_URL = "https://www.flickr.com/services/oauth/";
 
     /**
      * Create an instance of Retrofit object
      * */
-    public static Retrofit getRetrofitInstance(String base_url) {
+    public static Retrofit getRetrofitInstance() {
         Gson gson = new GsonBuilder()
                 .setLenient()
                 .create();
@@ -27,7 +28,7 @@ public class RetrofitOAuthInstance {
 
         if (retrofit == null) {
             retrofit = new Retrofit.Builder()
-                    .baseUrl(base_url)
+                    .baseUrl(BASE_URL)
                     .addConverterFactory(GsonConverterFactory.create(gson))
                     .client(client)
                     .build();
