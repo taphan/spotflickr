@@ -19,9 +19,12 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 
 import com.cs550.teama.spotflickr.R;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.naver.maps.geometry.LatLng;
 import com.naver.maps.map.CameraUpdate;
 import com.naver.maps.map.MapFragment;
@@ -51,6 +54,8 @@ public class MapFragmentActivity extends AppCompatActivity implements OnMapReady
     private OkHttpClient client = new OkHttpClient();
     private JSONArray placeList = new JSONArray();
     private DrawerLayout drawer;
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
+    FirebaseAuth mAuth;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -94,8 +99,6 @@ public class MapFragmentActivity extends AppCompatActivity implements OnMapReady
         LatLng current_location = new LatLng(location.getLatitude(), location.getLongitude());
         FlickerHttpTask task = new FlickerHttpTask();
         task.execute(current_location);
-
-
 
     }
 

@@ -20,6 +20,10 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class SignupActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -27,6 +31,7 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
     ProgressBar progressBar;
 
     private FirebaseAuth mAuth;
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -45,9 +50,9 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     private void registerUser() {
-        String username = editTextUserName.getText().toString().trim();
-        String email = editTextEmail.getText().toString().trim();
-        String password = editTextPassword.getText().toString().trim();
+        final String username = editTextUserName.getText().toString().trim();
+        final String email = editTextEmail.getText().toString().trim();
+        final String password = editTextPassword.getText().toString().trim();
 
         if (username.isEmpty()) {
             editTextUserName.setError("User name is required.");
@@ -86,6 +91,11 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
             public void onComplete(@NonNull Task<AuthResult> task) {
                 progressBar.setVisibility(View.GONE);
                 if (task.isSuccessful()) {
+                    Map<String, Object> user = new HashMap<>();
+                    user.put("user name", username);
+                    user.put("user email", email);
+                    user.put("password", password);
+                    db.collection("users").add(user);
                     Toast.makeText(getApplicationContext(), "User Registration Successful", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(SignupActivity.this, LoginActivity.class);
                     startActivity(intent);
