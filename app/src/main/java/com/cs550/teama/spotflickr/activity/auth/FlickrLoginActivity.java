@@ -1,4 +1,4 @@
-package com.cs550.teama.spotflickr.activity;
+package com.cs550.teama.spotflickr.activity.auth;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -12,7 +12,6 @@ import android.webkit.WebViewClient;
 import com.cs550.teama.spotflickr.R;
 import com.cs550.teama.spotflickr.interfaces.LoginObserver;
 import com.cs550.teama.spotflickr.services.OAuthService;
-import com.cs550.teama.spotflickr.services.OAuthServiceWithMapParams;
 import com.cs550.teama.spotflickr.services.Utils;
 
 import java.util.Map;
@@ -22,14 +21,13 @@ public class FlickrLoginActivity extends AppCompatActivity implements LoginObser
     WebView webView;
     SwipeRefreshLayout swipe;
     OAuthService oauth;
-//    OAuthServiceWithMapParams oauth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.content_oauth);
 
-        swipe = (SwipeRefreshLayout)findViewById(R.id.swipe);
+        swipe = findViewById(R.id.swipe);
         swipe.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -39,12 +37,11 @@ public class FlickrLoginActivity extends AppCompatActivity implements LoginObser
         });
 
         oauth = new OAuthService(this);
-//        oauth = new OAuthServiceWithMapParams(this);
     }
 
 
     public void WebAction(String loginUrl){
-        webView = (WebView) findViewById(R.id.webView);
+        webView = findViewById(R.id.webView);
         webView.getSettings().setJavaScriptEnabled(true);
         webView.getSettings().setAppCacheEnabled(true);
         webView.loadUrl(loginUrl);
@@ -108,11 +105,5 @@ public class FlickrLoginActivity extends AppCompatActivity implements LoginObser
         Intent resultIntent = new Intent();
         setResult(Activity.RESULT_OK, resultIntent);
         finish();
-    }
-
-    @Override
-    public void onRequestTokenReceived(OAuthServiceWithMapParams oauth) {
-        String url = oauth.getAuthorizationURL();
-        WebAction(url);
     }
 }

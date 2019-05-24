@@ -21,6 +21,7 @@ import android.view.MenuItem;
 
 
 import com.cs550.teama.spotflickr.R;
+import com.cs550.teama.spotflickr.activity.user.UserProfileFragmentActivity;
 import com.naver.maps.geometry.LatLng;
 import com.naver.maps.map.CameraUpdate;
 import com.naver.maps.map.MapFragment;

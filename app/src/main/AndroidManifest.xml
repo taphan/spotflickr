@@ -15,7 +15,7 @@
         <meta-data android:name="com.naver.maps.map.CLIENT_ID" android:value="vh8iieoys0" />
 
         <activity
-            android:name=".activity.LoginActivity"
+            android:name=".activity.auth.LoginActivity"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -23,13 +23,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activity.SignupActivity" />
+        <activity android:name=".activity.auth.SignupActivity" />
         <activity android:name=".activity.MapFragmentActivity"/>
-        <activity android:name=".activity.UserProfileFragmentActivity" />
+        <activity android:name=".activity.user.UserProfileFragmentActivity" />
         <activity android:name=".activity.PhotoListActivity"/>
-        <activity android:name=".activity.EmptyOAuthActivity"/>
+        <activity android:name=".activity.auth.EmptyOAuthActivity"/>
         <activity
-            android:name=".activity.FlickrLoginActivity"
+            android:name=".activity.auth.FlickrLoginActivity"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.WEB"/>

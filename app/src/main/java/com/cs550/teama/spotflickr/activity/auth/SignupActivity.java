@@ -1,4 +1,4 @@
-package com.cs550.teama.spotflickr.activity;
+package com.cs550.teama.spotflickr.activity.auth;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -29,10 +29,10 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
 
-        editTextUserName = (EditText) findViewById(R.id.editTextUserName);
-        editTextEmail = (EditText) findViewById(R.id.editTextEmail);
-        editTextPassword = (EditText) findViewById(R.id.editTextPassword);
-        progressBar = (ProgressBar) findViewById(R.id.progressbar);
+        editTextUserName = findViewById(R.id.editTextUserName);
+        editTextEmail = findViewById(R.id.editTextEmail);
+        editTextPassword = findViewById(R.id.editTextPassword);
+        progressBar = findViewById(R.id.progressbar);
 
         mAuth = FirebaseAuth.getInstance();
 

@@ -1,4 +1,4 @@
-package com.cs550.teama.spotflickr.activity;
+package com.cs550.teama.spotflickr.activity.auth;
 
 import android.app.Activity;
 import android.content.Intent;
