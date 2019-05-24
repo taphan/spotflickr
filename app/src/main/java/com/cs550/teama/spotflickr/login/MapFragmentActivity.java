@@ -20,10 +20,18 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 import com.cs550.teama.spotflickr.R;
+import com.cs550.teama.spotflickr.User;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.naver.maps.geometry.LatLng;
 import com.naver.maps.map.CameraUpdate;
@@ -55,7 +63,9 @@ public class MapFragmentActivity extends AppCompatActivity implements OnMapReady
     private JSONArray placeList = new JSONArray();
     private DrawerLayout drawer;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
-    FirebaseAuth mAuth;
+    FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    DocumentReference documentReference = db.collection("users").document(mAuth.getCurrentUser().getUid());
+    private User current_user;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -68,13 +78,36 @@ public class MapFragmentActivity extends AppCompatActivity implements OnMapReady
         setSupportActionBar(toolbar);
 
         drawer = findViewById(R.id.drawer_layout);
-        NavigationView navigationView = findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar,
                 R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
+
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+        final TextView user_name = (TextView) navigationView.getHeaderView(0).findViewById(R.id.user_name);
+        final TextView user_email = (TextView) navigationView.getHeaderView(0).findViewById(R.id.user_email);
+
+        documentReference.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                if (documentSnapshot.exists()) {
+                    current_user = documentSnapshot.toObject(User.class);
+                    user_name.setText(current_user.getUsername());
+                    user_email.setText(current_user.getEmail());
+                }
+                else
+                    Toast.makeText(getApplicationContext(), "Document not found", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+//        NavigationView navigationView = findViewById(R.id.nav_view);
+//        navigationView.setNavigationItemSelectedListener(this);
+//        TextView user_name = (TextView) navigationView.getHeaderView(0).findViewById(R.id.user_name);
+//        user_name.setText(current_user.getUsername());
+//        TextView user_email = (TextView) navigationView.getHeaderView(0).findViewById(R.id.user_email);
+//        user_email.setText("");
 
         MapFragment mapFragment = (MapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         if (mapFragment == null) {
