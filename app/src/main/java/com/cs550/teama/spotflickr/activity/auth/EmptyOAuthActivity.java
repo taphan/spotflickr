@@ -53,7 +53,7 @@ public class EmptyOAuthActivity extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
+        // noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
         }
@@ -65,28 +65,22 @@ public class EmptyOAuthActivity extends AppCompatActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        switch(requestCode) {
-            case (flickrLoginActivityRequestCode) : {
-                if (resultCode == Activity.RESULT_OK) {
-                    //String newText = data.getStringExtra("accessToken");
-                    // TODO Update your TextView.
-                    String name = OAuthService.INSTANCE.getAccessTokenResponse().get("fullname");
-                    name = Utils.oauthDecode(name);
-                    new AlertDialog.Builder(this)
-                            .setTitle("Login Status")
-                            .setMessage("Successfully logged in!\nWelcome "+name)
-                            .setPositiveButton(android.R.string.ok, null)
-                            .show();
-                }
-                else if (resultCode == Activity.RESULT_CANCELED){
-                    // failed to login
-                    new AlertDialog.Builder(this)
-                            .setTitle("Login Status")
-                            .setMessage("Failed to login")
-                            .setPositiveButton(android.R.string.ok, null)
-                            .show();
-                }
-                break;
+        if (requestCode == flickrLoginActivityRequestCode) {
+            if (resultCode == Activity.RESULT_OK) {
+                String name = OAuthService.INSTANCE.getAccessTokenResponse().get("fullname");
+                name = Utils.oauthDecode(name);
+                new AlertDialog.Builder(this)
+                        .setTitle("Login Status")
+                        .setMessage("Successfully logged in!\nWelcome " + name)
+                        .setPositiveButton(android.R.string.ok, null)
+                        .show();
+            } else if (resultCode == Activity.RESULT_CANCELED) {
+                // Failed to login
+                new AlertDialog.Builder(this)
+                        .setTitle("Login Status")
+                        .setMessage("Failed to login")
+                        .setPositiveButton(android.R.string.ok, null)
+                        .show();
             }
         }
     }

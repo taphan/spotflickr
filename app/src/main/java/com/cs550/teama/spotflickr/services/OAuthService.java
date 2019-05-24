@@ -25,13 +25,15 @@ import retrofit2.Response;
 
 public class OAuthService {
     public static OAuthService INSTANCE;
-    final static String API_KEY = "c78af6829b82ef76418e7563ee33fe85";
-    final static String SIGNATURE_KEY = "76a0afc91403a9a7&";
-    final static String TAG = "OAuthService";
+    private final static String TAG = "OAuthService";
+    private final static String API_KEY = "c78af6829b82ef76418e7563ee33fe85";
+    private final static String SIGNATURE_KEY = "76a0afc91403a9a7&";
+    private final static String ACCESS_TOKEN_URL = "https://www.flickr.com/services/oauth/access_token/";
+    private final static String REQUEST_TOKEN_URL = "https://www.flickr.com/services/oauth/request_token/";
 
     private Map<String, String> requestTokenResponse = new HashMap<>();
     private Map<String, String> accessTokenResponse = new HashMap<>();
-    private final LoginObserver loginObserver;
+private final LoginObserver loginObserver;
 
     public OAuthService(LoginObserver loginObserver) {
         INSTANCE = this;
@@ -55,26 +57,32 @@ public class OAuthService {
         return android.util.Base64.encodeToString(signedBytes, Base64.NO_WRAP);
     }
 
+    private String getSignature(Map<String, String> params, String secretKey, String tokenUrl){
+        String httpMethod = "GET";
+        String queryText = getQueryTextByParams(params);
+        String encodedQueryText = Utils.oauthEncode(queryText);
+        String encodedUrl = Utils.oauthEncode(tokenUrl);
+        String baseString = httpMethod + "&" + encodedUrl + "&" + encodedQueryText;
+        return getSignature(secretKey, baseString);
+    }
+
+    public String getAuthorizationURL(){
+        String url = "https://www.flickr.com/services/oauth/authorize?" +
+                "oauth_token=" +
+                this.requestTokenResponse.get("oauth_token");
+        return url;
+    }
+
     private String getRequestTokenUrl() {
-        String requestTokenUrl = "https://www.flickr.com/services/oauth/request_token/";
-        String baseString1 = "GET";
-        String baseString2 = Utils.oauthEncode(requestTokenUrl);
-        String nonce = "flickr_oauth" + String.valueOf(System.currentTimeMillis());
-        String timestamp = String.valueOf(System.currentTimeMillis()/1000);
-        String callbackParam = "oauth_callback=" + Utils.oauthEncode("/"); // need / (or whatever) for the oauth to parse oauth_verifier
-        String apiKeyParam = "oauth_consumer_key=" + API_KEY; //your apiKey from flickr
-        String nonceParam = "oauth_nonce=" + nonce;
-        String signatureMethodParam = "oauth_signature_method=" + "HMAC-SHA1";
-        String timestampParam = "oauth_timestamp=" + timestamp;
-        String versionParam = "oauth_version=" + "1.0";
-        String unencBaseString3 = callbackParam + "&" + apiKeyParam + "&" + nonceParam + "&" + signatureMethodParam + "&" + timestampParam + "&" + versionParam;
-        String baseString3 = Utils.oauthEncode(unencBaseString3);
-        String baseString = baseString1 + "&" + baseString2 + "&" + baseString3;
-        String signature = getSignature(SIGNATURE_KEY, baseString);
-        String signatureParam = "oauth_signature=" + Utils.oauthEncode(signature);
-        return requestTokenUrl + "?" + callbackParam + "&" + apiKeyParam + "&" +
-                nonceParam + "&" + timestampParam + "&" + signatureMethodParam + "&" +
-                versionParam + "&" + signatureParam;
+        Map<String, String> params = new HashMap<>();
+        addMustHaveParams(params);
+        params.put("callback", Utils.oauthEncode("/"));
+
+        String signature = getSignature(params, SIGNATURE_KEY, REQUEST_TOKEN_URL);
+
+        params.put("signature", Utils.oauthEncode(signature));
+
+        return REQUEST_TOKEN_URL + "?" + getQueryTextByParams(params);
     }
 
     private void getRequestToken() {
@@ -87,6 +95,7 @@ public class OAuthService {
                 try {
                     String res = response.body().string();
                     Log.d(TAG, res);
+
                     requestTokenResponse = Utils.separateParameters(res);
                     loginObserver.onRequestTokenReceived(OAuthService.this);
                 } catch (IOException  e) {
@@ -101,49 +110,19 @@ public class OAuthService {
         });
     }
 
-
-    public String getAuthorizationURL(){
-        String url = "https://www.flickr.com/services/oauth/authorize?" +
-                "oauth_token=" +
-                this.requestTokenResponse.get("oauth_token");
-        return url;
-    }
-
     private String getAccessTokenUrl(String verifier) {
         Map<String, String> params = new HashMap<>();
-        String requestTokenUrl = "https://www.flickr.com/services/oauth/access_token/";
-        String httpMethod = "GET";
-        String encodedRequestTokenUrl = Utils.oauthEncode(requestTokenUrl);
-
-        params.put("nonce",  "flickr_oauth" + String.valueOf(System.currentTimeMillis()));
-        params.put("timestamp",  String.valueOf(System.currentTimeMillis()/1000));
-        params.put("consumer_key", API_KEY);// + "&" + requestTokenResponse.get("oauth_token_secret"));
-        params.put("signature_method","HMAC-SHA1");
+        addMustHaveParams(params);
         params.put("verifier", verifier);
         params.put("token", requestTokenResponse.get("oauth_token"));
-        //params.put("version", "1.0");
-        String queryText = getQueryTextByParams(params);
-        String encodedQueryText = Utils.oauthEncode(queryText);
-        String baseString = httpMethod + "&" + encodedRequestTokenUrl + "&" + encodedQueryText;
-        String signature = getSignature(SIGNATURE_KEY + requestTokenResponse.get("oauth_token_secret"), baseString);
 
+        String signature = getSignature(params,
+                SIGNATURE_KEY + requestTokenResponse.get("oauth_token_secret"),
+                ACCESS_TOKEN_URL);
         params.put("signature", Utils.oauthEncode(signature));
 
-        return requestTokenUrl + "?" + getQueryTextByParams(params);
+        return ACCESS_TOKEN_URL + "?" + getQueryTextByParams(params);
     }
-
-    private String getQueryTextByParams(Map<String, String> params){
-        String result = "";
-        // sort the parameters ascending
-        ArrayList<String> sorted = new ArrayList<>();
-        sorted.addAll(params.keySet());
-        Collections.sort(sorted);
-        for (String key : sorted){
-            result += "oauth_"+ key + "=" + params.get(key) + "&";
-        }
-        return result.substring(0,result.length()-1); // Remove last "&" character
-    }
-
 
     public void getAccessToken(String verifier) {
         ApiService service = RetrofitInstance.getRetrofitInstance().create(ApiService.class);
@@ -172,7 +151,25 @@ public class OAuthService {
         });
     }
 
+    private String getQueryTextByParams(Map<String, String> params){
+        String result = "";
+        // sort the parameters ascending
+        ArrayList<String> sorted = new ArrayList<>();
+        sorted.addAll(params.keySet());
+        Collections.sort(sorted);
+        for (String key : sorted){
+            result += "oauth_"+ key + "=" + params.get(key) + "&";
+        }
+        return result.substring(0,result.length()-1); // Remove last "&" character
+    }
 
+    private void addMustHaveParams(Map<String, String> params){
+        params.put("nonce",  "flickr_oauth" + System.currentTimeMillis());
+        params.put("timestamp",  String.valueOf(System.currentTimeMillis()/1000));
+        params.put("consumer_key", API_KEY);
+        params.put("signature_method","HMAC-SHA1");
+        params.put("version", "1.0");
+    }
 
     public Map<String, String> getRequestTokenResponse() {
         return requestTokenResponse;

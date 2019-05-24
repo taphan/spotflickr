@@ -16,7 +16,7 @@ public class Utils {
         } catch (MalformedURLException e){
             e.printStackTrace();
         }
-        if (realUrl != null){
+        if (realUrl != null && realUrl.getQuery() != null){
             return separateParameters(realUrl.getQuery());
         }
         // return nothing when the URL is not really a URL
@@ -63,3 +63,4 @@ public class Utils {
     }
 
 }
+

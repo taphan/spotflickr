@@ -6,8 +6,10 @@ import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.ProgressBar;
 
 import com.cs550.teama.spotflickr.R;
 import com.cs550.teama.spotflickr.interfaces.LoginObserver;
@@ -19,6 +21,7 @@ import java.util.Map;
 public class FlickrLoginActivity extends AppCompatActivity implements LoginObserver {
     final static String TAG = "FlickrLoginActivity";
     WebView webView;
+    ProgressBar progressBar_cyclic;
     SwipeRefreshLayout swipe;
     OAuthService oauth;
 
@@ -27,6 +30,9 @@ public class FlickrLoginActivity extends AppCompatActivity implements LoginObser
         super.onCreate(savedInstanceState);
         setContentView(R.layout.content_oauth);
 
+        webView = findViewById(R.id.webView);
+        progressBar_cyclic = findViewById(R.id.progressBar_cyclic);
+        progressBar_cyclic.setVisibility(View.GONE);
         swipe = findViewById(R.id.swipe);
         swipe.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -35,13 +41,10 @@ public class FlickrLoginActivity extends AppCompatActivity implements LoginObser
                     WebAction(oauth.getAuthorizationURL());
             }
         });
-
         oauth = new OAuthService(this);
     }
 
-
     public void WebAction(String loginUrl){
-        webView = findViewById(R.id.webView);
         webView.getSettings().setJavaScriptEnabled(true);
         webView.getSettings().setAppCacheEnabled(true);
         webView.loadUrl(loginUrl);
@@ -57,33 +60,29 @@ public class FlickrLoginActivity extends AppCompatActivity implements LoginObser
                 // do your stuff here
                 swipe.setRefreshing(false);
                 // check if there is oauth_verifier in the url.
+                Log.d(TAG, " ----- OAuth step 2 URL: " + url);
                 Map<String, String> queries = Utils.getUrlParameters(url);
                 if (queries != null && queries.containsKey("oauth_verifier")){
                     // The request token is approved
                     // Now get the Access Token with the verifier
-                    System.out.println("------ APPROVED Request token --------");
+                    Log.d(TAG, "------ APPROVED Request token --------");
                     oauth.getAccessToken(queries.get("oauth_verifier"));
-
-                    // TODO: hide the webView now??
+                    // hide the webView and show a circle
+                    webView.setVisibility(View.GONE);
+                    progressBar_cyclic.setVisibility(View.VISIBLE);
                 }
-
             }
-
         });
-
     }
-
 
     @Override
     public void onBackPressed(){
-
         if (webView.canGoBack()){
             webView.goBack();
         } else {
             onLoginFail();
         }
     }
-
 
     @Override
     public void onRequestTokenReceived(OAuthService oauth) {
@@ -96,7 +95,8 @@ public class FlickrLoginActivity extends AppCompatActivity implements LoginObser
         Log.d(TAG, "----- LOGIN FAILED ------");
         Intent resultIntent = new Intent();
         setResult(Activity.RESULT_CANCELED, resultIntent);
-        finish();
+        webView.setVisibility(View.GONE);
+        progressBar_cyclic.setVisibility(View.VISIBLE);
     }
 
     @Override
