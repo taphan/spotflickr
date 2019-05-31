@@ -259,6 +259,10 @@ public class MapFragmentActivity extends AppCompatActivity implements OnMapReady
                     Marker marker = new Marker();
                     marker.setPosition(new LatLng(place.getDouble("latitude"),place.getDouble("longitude")));
                     marker.setMap(naverMap);
+                    /*marker.setOnClickListener(o -> {
+
+                        return true;
+                    });*/
                     InfoWindow infoWindow = new InfoWindow();
                     infoWindow.setAdapter(new InfoWindow.DefaultTextAdapter(getApplicationContext()) {
                         @NonNull

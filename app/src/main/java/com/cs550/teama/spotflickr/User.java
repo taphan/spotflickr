@@ -34,4 +34,7 @@ public class User {
     public List<String> getHotspot_id_list() {
         return hotspot_id_list;
     }
+    public void updatePassword(String password) {
+        this.password = password;
+    }
 }

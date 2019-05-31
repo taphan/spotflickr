@@ -1,5 +1,6 @@
 package com.cs550.teama.spotflickr.login;
 
+import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -9,11 +10,11 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.AttributeSet;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cs550.teama.spotflickr.R;
@@ -26,27 +27,27 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import org.w3c.dom.Text;
-
-import java.util.List;
-
-public class UserProfileFragmentActivity extends AppCompatActivity implements View.OnClickListener, NavigationView.OnNavigationItemSelectedListener {
+public class ChangePassword extends AppCompatActivity implements View.OnClickListener, NavigationView.OnNavigationItemSelectedListener {
 
     private DrawerLayout drawer;
-    TextView user_name, user_email;
-    ProgressBar progressBar;
-    FirebaseFirestore db = FirebaseFirestore.getInstance();
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
     DocumentReference documentReference = db.collection("users").document(mAuth.getCurrentUser().getUid());
     private User current_user;
+
+    EditText editTextPassword;
+    ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_user_profile);
+        setContentView(R.layout.activity_change_password);
+
+        editTextPassword = (EditText) findViewById(R.id.editTextPassword);
+        progressBar = (ProgressBar) findViewById(R.id.progressbar);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
-        toolbar.setTitle("User Profile");
+        toolbar.setTitle("Change Password");
         setSupportActionBar(toolbar);
 
         drawer = findViewById(R.id.drawer_layout);
@@ -58,25 +59,46 @@ public class UserProfileFragmentActivity extends AppCompatActivity implements Vi
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        user_name = (TextView) findViewById(R.id.user_name);
-        user_email = (TextView) findViewById(R.id.user_email);
-        progressBar = (ProgressBar) findViewById(R.id.progressbar);
-
         documentReference.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
-                if (documentSnapshot.exists()) {
-                    current_user = documentSnapshot.toObject(User.class);
-                    user_name.setText("Welcome, " + current_user.getUsername() + "!");
-                    user_email.setText("E-mail: " + current_user.getEmail());
-                }
-                else
-                    Toast.makeText(getApplicationContext(), "Document not found", Toast.LENGTH_SHORT).show();
+                current_user = documentSnapshot.toObject(User.class);
             }
         });
 
-        findViewById(R.id.change_password).setOnClickListener(this);
-        findViewById(R.id.delete_account).setOnClickListener(this);
+        findViewById(R.id.changePassword).setOnClickListener(this);
+    }
+
+    private void changePassword() {
+        final String password = editTextPassword.getText().toString().trim();
+
+        if (password.isEmpty()) {
+            editTextPassword.setError("Password is required.");
+            editTextPassword.requestFocus();
+            return;
+        }
+
+        if (password.length() < 10) {
+            editTextPassword.setError("Minimum length of password should be 10");
+            editTextPassword.requestFocus();
+            return;
+        }
+
+        progressBar.setVisibility(View.VISIBLE);
+
+        mAuth.getCurrentUser().updatePassword(password).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                progressBar.setVisibility(View.GONE);
+                if (task.isSuccessful()) {
+                    current_user.updatePassword(password);
+                    documentReference.set(current_user);
+                    Toast.makeText(getApplicationContext(), "Password Successfully Changed", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(ChangePassword.this, UserProfileFragmentActivity.class);
+                    startActivity(intent);
+                }
+            }
+        });
     }
 
     @Override
@@ -103,30 +125,10 @@ public class UserProfileFragmentActivity extends AppCompatActivity implements Vi
     }
 
     @Override
-    public void onClick(View view) {
-        switch(view.getId()) {
-            case R.id.change_password:
-                startActivity(new Intent(this, ChangePassword.class));
-                break;
-
-            case R.id.delete_account:
-                progressBar.setVisibility(View.VISIBLE);
-                mAuth.getCurrentUser().delete().addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        progressBar.setVisibility(View.GONE);
-                        if (task.isSuccessful()) {
-                            List<String> hotspotIDList = current_user.getHotspot_id_list();
-                            for (int i = 0; i < hotspotIDList.size(); i++) {
-                                db.collection("hotspot lists").document(hotspotIDList.get(i)).delete();
-                            }
-                            documentReference.delete();
-                            Toast.makeText(getApplicationContext(), "Account Successfully Deleted", Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(UserProfileFragmentActivity.this, LoginActivity.class);
-                            startActivity(intent);
-                        }
-                    }
-                });
+    public void onClick(View v) {
+        switch(v.getId()) {
+            case R.id.changePassword:
+                changePassword();
                 break;
         }
     }

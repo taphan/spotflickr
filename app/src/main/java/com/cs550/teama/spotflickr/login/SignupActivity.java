@@ -14,6 +14,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.cs550.teama.spotflickr.HotspotList;
 import com.cs550.teama.spotflickr.R;
 import com.cs550.teama.spotflickr.User;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -23,6 +24,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -93,8 +95,16 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
             public void onComplete(@NonNull Task<AuthResult> task) {
                 progressBar.setVisibility(View.GONE);
                 if (task.isSuccessful()) {
-                    User user = new User(username, email, password, null);
+                    //User user = new User(username, email, password, null);
+                    List<String> hotspot_list = new ArrayList<String>();
+                    hotspot_list.add(mAuth.getCurrentUser().getUid());
+
+                    User user = new User(username, email, password, hotspot_list);
                     db.collection("users").document(mAuth.getCurrentUser().getUid()).set(user);
+
+                    HotspotList hotspotList = new HotspotList("default", "", mAuth.getCurrentUser().getUid());
+                    db.collection("hotspot lists").document(mAuth.getCurrentUser().getUid()).set(hotspotList);
+
                     Toast.makeText(getApplicationContext(), "User Registration Successful", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(SignupActivity.this, LoginActivity.class);
                     startActivity(intent);
