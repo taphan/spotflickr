@@ -25,6 +25,7 @@ import android.widget.Toast;
 
 import com.cs550.teama.spotflickr.R;
 import com.cs550.teama.spotflickr.User;
+import com.cs550.teama.spotflickr.api.PhotoListActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -49,12 +50,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+
 
 public class MapFragmentActivity extends AppCompatActivity implements OnMapReadyCallback, NavigationView.OnNavigationItemSelectedListener {
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1000;
@@ -255,6 +256,15 @@ public class MapFragmentActivity extends AppCompatActivity implements OnMapReady
                         Marker marker = new Marker();
                         marker.setPosition(new LatLng(place.getDouble("latitude"),place.getDouble("longitude")));
                         marker.setOnClickListener(o -> {
+                            Intent intent = new Intent(MapFragmentActivity.this, PhotoListActivity.class);
+                            try {
+                                intent.putExtra("content", place.getString("_content"));
+                                intent.putExtra("latitude", Double.toString(place.getDouble("latitude")));
+                                intent.putExtra("longitude", Double.toString(place.getDouble("longitude")));
+                                startActivity(intent);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
 
                             return true;
                         });
