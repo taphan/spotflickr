@@ -37,4 +37,11 @@ public class User {
     public void updatePassword(String password) {
         this.password = password;
     }
+    public void addHotspotList(String listID) {
+        hotspot_id_list.add(listID);
+    }
+    public int getHotspotIdListSize() {
+        return hotspot_id_list.size();
+    }
+
 }

@@ -1,8 +1,12 @@
 package com.cs550.teama.spotflickr;
 
+import com.google.firebase.firestore.Exclude;
+
+import java.io.Serializable;
 import java.util.List;
 
-public class HotspotList {
+public class HotspotList implements Serializable {
+    @Exclude private String listId;
     private String name;
     private String description;
     private String user_id;
@@ -17,6 +21,11 @@ public class HotspotList {
         this.user_id = user_id;
     }
 
+
+    public void setListId(String listId) {
+        this.listId = listId;
+    }
+    public String getListId() { return listId; }
     public String getName() {
         return name;
     }

@@ -1,27 +1,33 @@
 package com.cs550.teama.spotflickr.login;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.cs550.teama.spotflickr.HotspotList;
 import com.cs550.teama.spotflickr.R;
 import com.cs550.teama.spotflickr.User;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -33,11 +39,14 @@ import java.util.List;
 public class UserProfileFragmentActivity extends AppCompatActivity implements View.OnClickListener, NavigationView.OnNavigationItemSelectedListener {
 
     private DrawerLayout drawer;
+    private EditText editTextName;
+    private EditText editTextDesc;
     TextView user_name, user_email;
     ProgressBar progressBar;
-    FirebaseFirestore db = FirebaseFirestore.getInstance();
-    FirebaseAuth mAuth = FirebaseAuth.getInstance();
-    DocumentReference documentReference = db.collection("users").document(mAuth.getCurrentUser().getUid());
+
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    private DocumentReference userDocRef = db.collection("users").document(mAuth.getCurrentUser().getUid());
     private User current_user;
 
     @Override
@@ -58,15 +67,20 @@ public class UserProfileFragmentActivity extends AppCompatActivity implements Vi
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
+        final TextView nav_user_name = (TextView) navigationView.getHeaderView(0).findViewById(R.id.user_name);
+        final TextView nav_user_email = (TextView) navigationView.getHeaderView(0).findViewById(R.id.user_email);
+
         user_name = (TextView) findViewById(R.id.user_name);
         user_email = (TextView) findViewById(R.id.user_email);
         progressBar = (ProgressBar) findViewById(R.id.progressbar);
 
-        documentReference.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+        userDocRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 if (documentSnapshot.exists()) {
                     current_user = documentSnapshot.toObject(User.class);
+                    nav_user_name.setText(current_user.getUsername());
+                    nav_user_email.setText(current_user.getEmail());
                     user_name.setText("Welcome, " + current_user.getUsername() + "!");
                     user_email.setText("E-mail: " + current_user.getEmail());
                 }
@@ -75,8 +89,13 @@ public class UserProfileFragmentActivity extends AppCompatActivity implements Vi
             }
         });
 
+        editTextName = findViewById(R.id.edittext_name);
+        editTextDesc = findViewById(R.id.edittext_desc);
+
         findViewById(R.id.change_password).setOnClickListener(this);
         findViewById(R.id.delete_account).setOnClickListener(this);
+        findViewById(R.id.hotspot_list).setOnClickListener(this);
+        findViewById(R.id.button_save).setOnClickListener(this);
     }
 
     @Override
@@ -102,6 +121,35 @@ public class UserProfileFragmentActivity extends AppCompatActivity implements Vi
         }
     }
 
+    private boolean hasValidationErrors(String name, String desc) {
+        if (name.isEmpty()) {
+            editTextName.setError("Name required");
+            editTextName.requestFocus();
+            return true;
+        }
+
+        return false;
+    }
+
+    private void deleteUser() {
+        progressBar.setVisibility(View.VISIBLE);
+        mAuth.getCurrentUser().delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                progressBar.setVisibility(View.GONE);
+                if (task.isSuccessful()) {
+                    for (int i = 0; i < current_user.getHotspotIdListSize(); i++) {
+                        db.collection("hotspot lists").document(current_user.getHotspot_id_list().get(i)).delete();
+                    }
+                    userDocRef.delete();
+                    Toast.makeText(getApplicationContext(), "Account Successfully Deleted", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(UserProfileFragmentActivity.this, LoginActivity.class);
+                    startActivity(intent);
+                }
+            }
+        });
+    }
+
     @Override
     public void onClick(View view) {
         switch(view.getId()) {
@@ -110,23 +158,58 @@ public class UserProfileFragmentActivity extends AppCompatActivity implements Vi
                 break;
 
             case R.id.delete_account:
-                progressBar.setVisibility(View.VISIBLE);
-                mAuth.getCurrentUser().delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle("Are you sure about this?");
+                builder.setMessage("Deletion is permanent...");
+
+                builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        progressBar.setVisibility(View.GONE);
-                        if (task.isSuccessful()) {
-                            List<String> hotspotIDList = current_user.getHotspot_id_list();
-                            for (int i = 0; i < hotspotIDList.size(); i++) {
-                                db.collection("hotspot lists").document(hotspotIDList.get(i)).delete();
-                            }
-                            documentReference.delete();
-                            Toast.makeText(getApplicationContext(), "Account Successfully Deleted", Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(UserProfileFragmentActivity.this, LoginActivity.class);
-                            startActivity(intent);
-                        }
+                    public void onClick(DialogInterface dialog, int which) {
+                        deleteUser();
                     }
                 });
+
+                builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
+                AlertDialog ad = builder.create();
+                ad.show();
+                break;
+            case R.id.hotspot_list:
+                startActivity(new Intent(this, HotspotListActivity.class));
+                break;
+            case R.id.button_save:
+                final String name = editTextName.getText().toString().trim();
+                final String desc = editTextDesc.getText().toString().trim();
+
+                if (!hasValidationErrors(name, desc)) {
+                    CollectionReference dbProducts = db.collection("hotspot lists");
+
+                    HotspotList hotspotList = new HotspotList(
+                            name,
+                            desc,
+                            mAuth.getCurrentUser().getUid()
+                    );
+
+                    dbProducts.add(hotspotList)
+                            .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                                @Override
+                                public void onSuccess(DocumentReference listDocRef) {
+                                    Toast.makeText(UserProfileFragmentActivity.this, "Hotspot List Added", Toast.LENGTH_LONG).show();
+                                    current_user.addHotspotList(listDocRef.getId());
+                                    userDocRef.set(current_user);
+                                }
+                            })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Toast.makeText(UserProfileFragmentActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+                                }
+                            });
+                }
                 break;
         }
     }

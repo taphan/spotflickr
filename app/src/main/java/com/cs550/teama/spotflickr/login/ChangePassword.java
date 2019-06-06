@@ -15,6 +15,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cs550.teama.spotflickr.R;
@@ -59,10 +60,19 @@ public class ChangePassword extends AppCompatActivity implements View.OnClickLis
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
+        final TextView nav_user_name = (TextView) navigationView.getHeaderView(0).findViewById(R.id.user_name);
+        final TextView nav_user_email = (TextView) navigationView.getHeaderView(0).findViewById(R.id.user_email);
+
         documentReference.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
-                current_user = documentSnapshot.toObject(User.class);
+                if (documentSnapshot.exists()) {
+                    current_user = documentSnapshot.toObject(User.class);
+                    nav_user_name.setText(current_user.getUsername());
+                    nav_user_email.setText(current_user.getEmail());
+                }
+                else
+                    Toast.makeText(getApplicationContext(), "Document not found", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -105,6 +115,7 @@ public class ChangePassword extends AppCompatActivity implements View.OnClickLis
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
         switch (menuItem.getItemId()) {
             case R.id.nav_profile:
+                startActivity(new Intent(this, UserProfileFragmentActivity.class));
                 break;
             case R.id.nav_map:
                 startActivity(new Intent(this, MapFragmentActivity.class));
