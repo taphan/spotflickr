@@ -61,7 +61,7 @@ public class MapFragmentActivity extends AppCompatActivity implements OnMapReady
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1000;
     private FusedLocationSource locationSource;
     private LocationManager lm;
-    private OkHttpClient client = new OkHttpClient.Builder().connectTimeout(1, TimeUnit.MINUTES).readTimeout(30, TimeUnit.SECONDS).build();
+    private OkHttpClient client = new OkHttpClient.Builder().connectTimeout(5, TimeUnit.MINUTES).readTimeout(300, TimeUnit.SECONDS).build();
     private JSONArray placeList = new JSONArray();
     private DrawerLayout drawer;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
