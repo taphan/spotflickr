@@ -12,6 +12,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cs550.teama.spotflickr.R;
+import com.cs550.teama.spotflickr.activity.MapFragmentActivity;
 import com.cs550.teama.spotflickr.model.HotspotList;
 import com.cs550.teama.spotflickr.model.User;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -99,7 +100,8 @@ public class RegisterPasswordActivity extends AppCompatActivity implements View.
                     db.collection("hotspot lists").document(mAuth.getCurrentUser().getUid()).set(hotspotList);
 
                     Toast.makeText(getApplicationContext(), "User Registration Successful", Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(RegisterPasswordActivity.this, LoginActivity.class);
+                    Intent intent = new Intent(RegisterPasswordActivity.this, MapFragmentActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(intent);
                 } else {
                     if (task.getException() instanceof FirebaseAuthUserCollisionException) {
