@@ -1,6 +1,4 @@
-package com.cs550.teama.spotflickr;
-
-import java.util.List;
+package com.cs550.teama.spotflickr.model;
 
 public class HotspotList {
     private String name;

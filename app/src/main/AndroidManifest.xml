@@ -11,6 +11,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
+        android:name=".App"
         android:theme="@style/AppTheme">
         <activity android:name=".login.ChangePassword"></activity>
 
@@ -19,7 +20,7 @@
             android:value="vh8iieoys0" />
 
         <activity
-            android:name=".login.LoginActivity"
+            android:name=".activity.auth.LoginActivity"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -27,10 +28,21 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".login.SignupActivity" />
-        <activity android:name=".login.MapFragmentActivity" />
-        <activity android:name=".login.UserProfileFragmentActivity" />
-        <activity android:name=".api.PhotoListActivity" />
+
+        <activity android:name=".activity.auth.SignupActivity" />
+        <activity android:name=".activity.MapFragmentActivity"/>
+        <activity android:name=".activity.user.UserProfileFragmentActivity" />
+        <activity android:name=".activity.PhotoListActivity"/>
+        <activity android:name=".activity.auth.EmptyOAuthActivity"/>
+        <activity
+            android:name=".activity.auth.FlickrLoginActivity"
+            android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.WEB"/>
+
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

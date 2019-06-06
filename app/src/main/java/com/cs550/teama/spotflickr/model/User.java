@@ -1,8 +1,6 @@
-package com.cs550.teama.spotflickr;
+package com.cs550.teama.spotflickr.model;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class User {
 

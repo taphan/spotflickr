@@ -1,4 +1,4 @@
-package com.cs550.teama.spotflickr.login;
+package com.cs550.teama.spotflickr.activity;
 
 import android.Manifest;
 import android.content.Context;
@@ -12,7 +12,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.UiThread;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -24,15 +23,13 @@ import android.widget.Toast;
 
 
 import com.cs550.teama.spotflickr.R;
-import com.cs550.teama.spotflickr.User;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
+import com.cs550.teama.spotflickr.model.User;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.cs550.teama.spotflickr.activity.user.UserProfileFragmentActivity;
 import com.naver.maps.geometry.LatLng;
 import com.naver.maps.map.CameraUpdate;
 import com.naver.maps.map.MapFragment;
@@ -49,7 +46,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -212,7 +208,7 @@ public class MapFragmentActivity extends AppCompatActivity implements OnMapReady
 //    }
 
     private class FlickerHttpTask extends AsyncTask<LatLng, Void, Void> implements OnMapReadyCallback {
-        JSONArray placeLIst;
+        JSONArray placeList;
         @Override
         protected Void doInBackground(LatLng... params) {
             LatLng CurrentLocation = params[0];
@@ -231,7 +227,7 @@ public class MapFragmentActivity extends AppCompatActivity implements OnMapReady
                 String json_body = body.substring(14, body.length()-1);
 
                 JSONArray placeList = new JSONObject(json_body).getJSONObject("places").getJSONArray("place");
-                this.placeLIst = placeList;
+                this.placeList = placeList;
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (JSONException e) {
@@ -252,10 +248,10 @@ public class MapFragmentActivity extends AppCompatActivity implements OnMapReady
         @Override
         @UiThread
         public void onMapReady(@NonNull NaverMap naverMap) {
-            System.out.println(this.placeLIst);
-            for (int i = 0; i < this.placeLIst.length(); i++) {
+            System.out.println(this.placeList);
+            for (int i = 0; i < this.placeList.length(); i++) {
                 try {
-                    final JSONObject place= this.placeLIst.getJSONObject(i);
+                    final JSONObject place= this.placeList.getJSONObject(i);
                     Marker marker = new Marker();
                     marker.setPosition(new LatLng(place.getDouble("latitude"),place.getDouble("longitude")));
                     marker.setMap(naverMap);

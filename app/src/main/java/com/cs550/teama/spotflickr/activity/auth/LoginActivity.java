@@ -1,4 +1,4 @@
-package com.cs550.teama.spotflickr.login;
+package com.cs550.teama.spotflickr.activity.auth;
 
 import android.content.Intent;
 import android.content.pm.PackageInfo;
@@ -11,21 +11,17 @@ import android.util.Base64;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cs550.teama.spotflickr.R;
-import com.cs550.teama.spotflickr.api.PhotoListActivity;
+import com.cs550.teama.spotflickr.activity.MapFragmentActivity;
+import com.cs550.teama.spotflickr.activity.PhotoListActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-
-import org.w3c.dom.Text;
 
 import java.security.MessageDigest;
 
@@ -43,15 +39,15 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         mAuth = FirebaseAuth.getInstance();
 
-        editTextEmail = (EditText) findViewById(R.id.editTextEmail);
-        editTextPassword = (EditText) findViewById(R.id.editTextPassword);
-        progressBar = (ProgressBar) findViewById(R.id.progressbar);
+        editTextEmail = findViewById(R.id.editTextEmail);
+        editTextPassword = findViewById(R.id.editTextPassword);
+        progressBar = findViewById(R.id.progressbar);
 
         findViewById(R.id.textViewSignup).setOnClickListener(this);
         findViewById(R.id.buttonLogin).setOnClickListener(this);
         findViewById(R.id.map_button).setOnClickListener(this);
         findViewById(R.id.photo_button).setOnClickListener(this);
-
+        findViewById(R.id.oauth_button).setOnClickListener(this);
     }
 
     private void userLogin() {
@@ -116,6 +112,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 break;
             case R.id.photo_button:
                 intent = new Intent(view.getContext(), PhotoListActivity.class);
+                startActivity(intent);
+                break;
+            case R.id.oauth_button:
+                intent = new Intent(view.getContext(), EmptyOAuthActivity.class);
                 startActivity(intent);
                 break;
         }
