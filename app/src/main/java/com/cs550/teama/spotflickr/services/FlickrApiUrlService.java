@@ -3,6 +3,9 @@ package com.cs550.teama.spotflickr.services;
 import android.util.Base64;
 import android.util.Log;
 
+import com.cs550.teama.spotflickr.App;
+import com.cs550.teama.spotflickr.R;
+
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -15,14 +18,15 @@ import javax.crypto.spec.SecretKeySpec;
 
 public class FlickrApiUrlService {
     private final static String TAG = "OAuthService";
-    private final static String API_KEY = "c78af6829b82ef76418e7563ee33fe85";
-    private final static String SIGNATURE_KEY = "76a0afc91403a9a7&";
-    public final static String BASE_URL = "https://www.flickr.com/services/rest/";
+    private final static String API_KEY = App.getContext().getString(R.string.flickr_api_key);
+    private final static String SIGNATURE_KEY = App.getContext().getString(R.string.flickr_api_secret);
+    private final static String BASE_URL = "https://www.flickr.com/services/rest/";
+    private Map<String, String> params;
     private OAuthService oAuthService;
 
     public FlickrApiUrlService(OAuthService oAuthService) {
         this.oAuthService = oAuthService;
-        this.getFinalLoginUrl();
+        this.params = new HashMap<>();
     }
     private String getSignature(String key, String data){
         final String HMAC_ALGORITHM = "HmacSHA1";
@@ -78,12 +82,9 @@ public class FlickrApiUrlService {
         params.put("api_key", API_KEY);
         params.put("method", "flickr.test.login");
 
-        String signature = getSignature(params, SIGNATURE_KEY +
+        String signature = getSignature(params, SIGNATURE_KEY + "&" +
                 oAuthService.getAccessTokenResponse().get("oauth_token_secret"), BASE_URL);
         params.put("oauth_signature", Utils.oauthEncode(signature));
-        for (String key: params.keySet()) {
-            Log.d(TAG, key + " value: " + params.get(key));
-        }
         return BASE_URL + "?" + getQueryTextByParams(params);
     }
 

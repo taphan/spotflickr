@@ -3,6 +3,8 @@ package com.cs550.teama.spotflickr.services;
 import android.util.Base64;
 import android.util.Log;
 
+import com.cs550.teama.spotflickr.App;
+import com.cs550.teama.spotflickr.R;
 import com.cs550.teama.spotflickr.interfaces.ApiService;
 import com.cs550.teama.spotflickr.interfaces.LoginObserver;
 import com.cs550.teama.spotflickr.network.RetrofitInstance;
@@ -26,8 +28,8 @@ import retrofit2.Response;
 public class OAuthService {
     public static OAuthService INSTANCE;
     private final static String TAG = "OAuthService";
-    private final static String API_KEY = "c78af6829b82ef76418e7563ee33fe85";
-    private final static String SIGNATURE_KEY = "76a0afc91403a9a7&";
+    private final static String API_KEY = App.getContext().getString(R.string.flickr_api_key);
+    private final static String SIGNATURE_KEY = App.getContext().getString(R.string.flickr_api_secret) + "&";
     public final static String FLICKR_URL = "https://www.flickr.com/";
     private final static String ACCESS_TOKEN_URL = FLICKR_URL + "services/oauth/access_token/";
     private final static String REQUEST_TOKEN_URL = FLICKR_URL + "services/oauth/request_token/";
