@@ -30,8 +30,6 @@
         </activity>
 
         <activity android:name=".activity.auth.SignupActivity" />
-        <activity android:name=".activity.auth.EmptyOAuthActivity"/>
-        <activity android:name=".activity.auth.RegisterPasswordActivity"/>
         <activity android:name=".activity.MapFragmentActivity"/>
         <activity android:name=".activity.user.UserProfileFragmentActivity" />
         <activity android:name=".activity.PhotoListActivity"/>
