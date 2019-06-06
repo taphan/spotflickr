@@ -1,7 +1,6 @@
 package com.cs550.teama.spotflickr.services;
 
 import android.util.Base64;
-import android.util.Log;
 
 import com.cs550.teama.spotflickr.App;
 import com.cs550.teama.spotflickr.R;
@@ -20,14 +19,16 @@ public class FlickrApiUrlService {
     private final static String TAG = "OAuthService";
     private final static String API_KEY = App.getContext().getString(R.string.flickr_api_key);
     private final static String SIGNATURE_KEY = App.getContext().getString(R.string.flickr_api_secret);
-    private final static String BASE_URL = "https://www.flickr.com/services/rest/";
+    private final static String BASE_URL = "https://api.flickr.com/services/rest/";
     private Map<String, String> params;
     private OAuthService oAuthService;
 
     public FlickrApiUrlService(OAuthService oAuthService) {
         this.oAuthService = oAuthService;
         this.params = new HashMap<>();
+        this.addMustHaveParams();
     }
+
     private String getSignature(String key, String data){
         final String HMAC_ALGORITHM = "HmacSHA1";
         SecretKeySpec keySpec = new SecretKeySpec(key.getBytes(), HMAC_ALGORITHM);
@@ -65,31 +66,26 @@ public class FlickrApiUrlService {
         return result.substring(0,result.length()-1); // Remove last "&" character
     }
 
-    private void addMustHaveParams(Map<String, String> params){
+    private void addMustHaveParams(){
         params.put("oauth_nonce",  "flickr_permission" + System.currentTimeMillis());
         params.put("oauth_timestamp",  String.valueOf(System.currentTimeMillis()/1000));
         params.put("oauth_consumer_key", API_KEY);
         params.put("oauth_signature_method","HMAC-SHA1");
         params.put("oauth_version", "1.0");
-    }
-
-    private String getLoginOAuthUrl() {
-        Map<String, String> params = new HashMap<>();
-        addMustHaveParams(params);
-        params.put("oauth_token", oAuthService.getAccessTokenResponse().get("oauth_token")); // Get from other class (OAuthService)
         params.put("nojsoncallback", "1");
         params.put("format", "json");
         params.put("api_key", API_KEY);
-        params.put("method", "flickr.test.login");
-
-        String signature = getSignature(params, SIGNATURE_KEY + "&" +
-                oAuthService.getAccessTokenResponse().get("oauth_token_secret"), BASE_URL);
-        params.put("oauth_signature", Utils.oauthEncode(signature));
-        return BASE_URL + "?" + getQueryTextByParams(params);
+        params.put("oauth_token", oAuthService.getAccessTokenResponse().get("oauth_token")); // Get from other class (OAuthService)
     }
 
-    private void getFinalLoginUrl() {
-        String oAuthUrl = this.getLoginOAuthUrl();
-        Log.d(TAG, oAuthUrl);
+    public void addParam(String key, String value) {
+        params.put(key, value);
+    }
+
+    public String getRequestUrl() {
+        String signature = getSignature(params, SIGNATURE_KEY + "&" +
+                oAuthService.getAccessTokenResponse().get("oauth_token_secret"), BASE_URL);
+        addParam("oauth_signature", Utils.oauthEncode(signature));
+        return BASE_URL + "?" + getQueryTextByParams(params);
     }
 }
