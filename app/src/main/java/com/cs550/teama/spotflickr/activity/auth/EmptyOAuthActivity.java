@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.cs550.teama.spotflickr.R;
+import com.cs550.teama.spotflickr.services.FlickrApiUrlService;
 import com.cs550.teama.spotflickr.services.OAuthService;
 import com.cs550.teama.spotflickr.services.Utils;
 
@@ -42,6 +43,7 @@ public class EmptyOAuthActivity extends AppCompatActivity {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == flickrLoginActivityRequestCode) {
+            FlickrApiUrlService urlService = new FlickrApiUrlService(OAuthService.INSTANCE);
             if (resultCode == Activity.RESULT_OK) {
                 Map<String, String> loginInfo = OAuthService.INSTANCE.getAccessTokenResponse();
                 String name = loginInfo.get("fullname");

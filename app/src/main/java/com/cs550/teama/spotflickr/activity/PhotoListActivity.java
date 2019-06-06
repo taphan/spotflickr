@@ -43,7 +43,7 @@ public class PhotoListActivity extends AppCompatActivity {
         /* Create handle for the RetrofitInstance interface*/
         ApiService service = RetrofitInstance.getRetrofitInstance().create(ApiService.class);
 
-        /* Call the method with parameter in the interface to get the notice data*/
+        /* Call the method with parameter in the interface to get the photo data*/
         Map<String, String> query = getQuery();
         Call<Photos> call = service.getRecentPhotos(query);
 
