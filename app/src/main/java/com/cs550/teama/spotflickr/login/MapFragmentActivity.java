@@ -50,6 +50,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -59,7 +60,7 @@ public class MapFragmentActivity extends AppCompatActivity implements OnMapReady
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1000;
     private FusedLocationSource locationSource;
     private LocationManager lm;
-    private OkHttpClient client = new OkHttpClient();
+    private OkHttpClient client = new OkHttpClient.Builder().connectTimeout(1, TimeUnit.MINUTES).readTimeout(30, TimeUnit.SECONDS).build();
     private JSONArray placeList = new JSONArray();
     private DrawerLayout drawer;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -200,17 +201,6 @@ public class MapFragmentActivity extends AppCompatActivity implements OnMapReady
 
 
 
-//    private ArrayList<LatLng> getPositionsOfHotSpot() throws IOException {
-//        Request request = new Request.Builder()
-//                .url("https://secure.flickr.com/services/rest/?method=flickr.places.getTopPlacesList&api_key=c78af6829b82ef76418e7563ee33fe85&place_type_id=22&format=json")
-//                .build();
-//        //it return with format as json.
-//        Response response = client.newCall(request).execute();
-//        System.out.println(response.toString());
-//
-//        return new ArrayList<LatLng>();
-//    }
-
     private class FlickerHttpTask extends AsyncTask<LatLng, Void, Void> implements OnMapReadyCallback {
         JSONArray placeLIst;
         @Override
@@ -221,20 +211,24 @@ public class MapFragmentActivity extends AppCompatActivity implements OnMapReady
             double minLng = CurrentLocation.longitude-0.01;
             double maxLng = CurrentLocation.longitude+0.01;
 
+            MapFragment mapFragment = (MapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+
             //it return with format as json.
             try {
+                String target_url = "https://secure.flickr.com/services/rest/?method=flickr.places.placesForBoundingBox&bbox="+minLng+","+minLat+","+maxLng+","+maxLat+"&api_key=c78af6829b82ef76418e7563ee33fe85&place_type_id=22&format=json";
                 Request request = new Request.Builder()
-                        .url("https://secure.flickr.com/services/rest/?method=flickr.places.placesForBoundingBox&bbox="+minLng+","+minLat+","+maxLng+","+maxLat+"&api_key=c78af6829b82ef76418e7563ee33fe85&place_type_id=22&format=json")
+                        .url(target_url)
                         .build();
                 Response response = client.newCall(request).execute();
                 String body = response.body().string();
                 String json_body = body.substring(14, body.length()-1);
-
                 JSONArray placeList = new JSONObject(json_body).getJSONObject("places").getJSONArray("place");
                 this.placeLIst = placeList;
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (JSONException e) {
+                e.printStackTrace();
+            } catch (Exception e){
                 e.printStackTrace();
             }
 
@@ -253,37 +247,42 @@ public class MapFragmentActivity extends AppCompatActivity implements OnMapReady
         @UiThread
         public void onMapReady(@NonNull NaverMap naverMap) {
             System.out.println(this.placeLIst);
-            for (int i = 0; i < this.placeLIst.length(); i++) {
-                try {
-                    final JSONObject place= this.placeLIst.getJSONObject(i);
-                    Marker marker = new Marker();
-                    marker.setPosition(new LatLng(place.getDouble("latitude"),place.getDouble("longitude")));
-                    marker.setMap(naverMap);
-                    /*marker.setOnClickListener(o -> {
 
-                        return true;
-                    });*/
-                    InfoWindow infoWindow = new InfoWindow();
-                    infoWindow.setAdapter(new InfoWindow.DefaultTextAdapter(getApplicationContext()) {
-                        @NonNull
-                        @Override
-                        public CharSequence getText(@NonNull InfoWindow infoWindow) {
-                            try {
-                                return place.getString("_content");
+            try{
+                for (int i = 0; i < this.placeLIst.length(); i++) {
+                    try {
+                        final JSONObject place= this.placeLIst.getJSONObject(i);
+                        Marker marker = new Marker();
+                        marker.setPosition(new LatLng(place.getDouble("latitude"),place.getDouble("longitude")));
+                        marker.setMap(naverMap);
+                        /*marker.setOnClickListener(o -> {
 
-                            } catch (JSONException e) {
-                                e.printStackTrace();
+                            return true;
+                        });*/
+                        InfoWindow infoWindow = new InfoWindow();
+                        infoWindow.setAdapter(new InfoWindow.DefaultTextAdapter(getApplicationContext()) {
+                            @NonNull
+                            @Override
+                            public CharSequence getText(@NonNull InfoWindow infoWindow) {
+                                try {
+                                    return place.getString("_content");
+
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                                return null;
                             }
-                            return null;
-                        }
-                    });
-                    infoWindow.open(marker);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+                        });
+                        infoWindow.open(marker);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
 
+                }
+                } catch(NullPointerException e){
+                e.printStackTrace();
             }
-            }
+        }
         }
     }
 
