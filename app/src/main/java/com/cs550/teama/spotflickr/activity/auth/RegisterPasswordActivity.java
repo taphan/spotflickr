@@ -118,14 +118,8 @@ public class RegisterPasswordActivity extends AppCompatActivity implements View.
 
     @Override
     public void onClick(View view) {
-        switch(view.getId()) {
-            case R.id.buttonSignUp:
-                registerUser();
-                break;
-
-            case R.id.textViewLogin:
-                startActivity(new Intent(this, LoginActivity.class));
-                break;
+        if (view.getId() == R.id.buttonSignUp) {
+            registerUser();
         }
     }
 }

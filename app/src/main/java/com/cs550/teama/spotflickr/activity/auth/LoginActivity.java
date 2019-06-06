@@ -48,7 +48,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         findViewById(R.id.textViewSignup).setOnClickListener(this);
         findViewById(R.id.buttonLogin).setOnClickListener(this);
-        findViewById(R.id.map_button).setOnClickListener(this);
         findViewById(R.id.photo_button).setOnClickListener(this);
     }
 
@@ -107,10 +106,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             case R.id.buttonLogin:
                 userLogin();
                 break;
-            case R.id.map_button:
-                intent = new Intent(view.getContext(), MapFragmentActivity.class);
-                startActivity(intent);
-                break;
             case R.id.photo_button:
                 intent = new Intent(view.getContext(), PhotoListActivity.class);
                 startActivity(intent);
@@ -125,7 +120,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         if (requestCode == flickrLoginActivityRequestCode) {
             if (resultCode == Activity.RESULT_OK) {
                 Map<String, String> loginInfo = OAuthService.INSTANCE.getAccessTokenResponse();
-                Intent intent = new Intent(LoginActivity.this, RegisterPasswordActivity.class);
+                Intent intent = new Intent(LoginActivity.this, SignupActivity.class);
                 intent.putExtra("name", Utils.oauthDecode(loginInfo.get("fullname")));
                 intent.putExtra("username", Utils.oauthDecode(loginInfo.get("username")));
                 startActivity(intent);

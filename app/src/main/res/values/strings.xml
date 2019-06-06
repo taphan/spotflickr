@@ -3,7 +3,9 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="action_settings">Settings</string>
-    <string name="register_user">Enter your password below to register an account for SpotFlickr</string>
+    <string name="register_user">Enter your email and password below to register an account for SpotFlickr</string>
     <string name="password">Password</string>
     <string name="sign_up">Sign Up</string>
+    <string name="signup_check">Already have an account? <u>Login</u></string>
+    <string name="signup">Don\'t have account? <u>Sign Up</u></string>
 </resources>

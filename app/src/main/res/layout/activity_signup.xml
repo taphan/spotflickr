@@ -36,15 +36,15 @@
             android:paddingLeft="15dp"
             android:paddingRight="15dp">
 
-            <EditText
-                android:id="@+id/editTextUserName"
+            <TextView
+                android:id="@+id/userInfoText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:fontFamily="sans-serif"
-                android:hint="User Name"
-                android:inputType="textPersonName"
-                android:paddingBottom="15dp"
-                android:textColorHint="@color/colorAccent" />
+                android:padding="15dp"
+                android:text="@string/register_user"
+                android:textAlignment="center"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+                android:textColor="@color/colorAccent" />
 
             <EditText
                 android:id="@+id/editTextEmail"
@@ -82,7 +82,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="15dp"
-                android:text="Already have an account? Login"
+                android:text="@string/signup_check"
                 android:textAlignment="center"
                 android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
                 android:textColor="@color/colorAccent" />
