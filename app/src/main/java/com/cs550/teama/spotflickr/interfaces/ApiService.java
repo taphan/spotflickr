@@ -1,4 +1,4 @@
-package com.cs550.teama.spotflickr.api;
+package com.cs550.teama.spotflickr.interfaces;
 
 import com.cs550.teama.spotflickr.model.Photos;
 
@@ -13,6 +13,12 @@ import retrofit2.http.Url;
 public interface ApiService {
     @GET(".")
     Call<Photos> getRecentPhotos(@QueryMap Map<String, String> options);
+
+    @GET()
+    Call<Photos> getPhotosForLocation(@Url String url);
+
     @GET
-    Call<ResponseBody> getPhotoFromUrl(@Url String url);
+    Call<ResponseBody> getOAuth(@Url String url);
+
+
 }
