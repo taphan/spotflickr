@@ -254,11 +254,12 @@ public class MapFragmentActivity extends AppCompatActivity implements OnMapReady
                         final JSONObject place= this.placeLIst.getJSONObject(i);
                         Marker marker = new Marker();
                         marker.setPosition(new LatLng(place.getDouble("latitude"),place.getDouble("longitude")));
-                        marker.setMap(naverMap);
-                        /*marker.setOnClickListener(o -> {
+                        marker.setOnClickListener(o -> {
 
                             return true;
-                        });*/
+                        });
+                        marker.setMap(naverMap);
+
                         InfoWindow infoWindow = new InfoWindow();
                         infoWindow.setAdapter(new InfoWindow.DefaultTextAdapter(getApplicationContext()) {
                             @NonNull
