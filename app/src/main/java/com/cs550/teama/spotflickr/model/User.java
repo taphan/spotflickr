@@ -13,6 +13,12 @@ public class User {
         // Default constructor required for calls to DataSnapshot.getValue(User.class)
     }
 
+    public User(String username, String password, List<String> hotspot_id_list) {
+        this.username = username;
+        this.password = password;
+        this.hotspot_id_list = hotspot_id_list;
+    }
+
     public User(String username, String email, String password, List<String> hotspot_id_list) {
         this.username = username;
         this.email = email;

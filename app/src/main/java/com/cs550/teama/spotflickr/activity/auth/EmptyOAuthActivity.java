@@ -104,10 +104,13 @@ public class EmptyOAuthActivity extends AppCompatActivity {
         if (requestCode == flickrLoginActivityRequestCode) {
             sendRequest();
             if (resultCode == Activity.RESULT_OK) {
+                Log.d(TAG, "Redirect to new activity");
                 Map<String, String> loginInfo = OAuthService.INSTANCE.getAccessTokenResponse();
-                String name = loginInfo.get("fullname");
-                name = Utils.oauthDecode(name);
-                new AlertDialog.Builder(this)
+                Intent intent = new Intent(EmptyOAuthActivity.this, RegisterPasswordActivity.class);
+                intent.putExtra("name", Utils.oauthDecode(loginInfo.get("fullname")));
+                intent.putExtra("username", Utils.oauthDecode(loginInfo.get("username")));
+                startActivity(intent);
+                /*new AlertDialog.Builder(this)
                         .setTitle("Login Status")
                         .setMessage("Successfully logged in!\nWelcome " + name)
                         .setPositiveButton(android.R.string.ok, null)
@@ -115,7 +118,7 @@ public class EmptyOAuthActivity extends AppCompatActivity {
                 textview.setText("You are now logged in as " + name + ".\n" +
                         "You username is " + Utils.oauthDecode(loginInfo.get("username")) + ".");
                 button.setText("Logged in");
-                button.setEnabled(false);
+                button.setEnabled(false);*/
             } else if (resultCode == Activity.RESULT_CANCELED) {
                 new AlertDialog.Builder(this)
                         .setTitle("Login Status")
