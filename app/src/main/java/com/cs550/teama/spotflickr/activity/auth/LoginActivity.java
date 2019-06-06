@@ -121,8 +121,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             if (resultCode == Activity.RESULT_OK) {
                 Map<String, String> loginInfo = OAuthService.INSTANCE.getAccessTokenResponse();
                 Intent intent = new Intent(LoginActivity.this, SignupActivity.class);
-                intent.putExtra("name", Utils.oauthDecode(loginInfo.get("fullname")));
-                intent.putExtra("username", Utils.oauthDecode(loginInfo.get("username")));
+                for (String key : loginInfo.keySet()) {
+                    Log.d(TAG, key + " " + Utils.oauthDecode(loginInfo.get(key)));
+                    intent.putExtra(key, Utils.oauthDecode(loginInfo.get(key)));
+                }
                 startActivity(intent);
 
             } else if (resultCode == Activity.RESULT_CANCELED) {

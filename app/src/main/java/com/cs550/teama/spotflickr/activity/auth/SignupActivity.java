@@ -11,9 +11,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.cs550.teama.spotflickr.R;
 import com.cs550.teama.spotflickr.activity.MapFragmentActivity;
 import com.cs550.teama.spotflickr.model.HotspotList;
-import com.cs550.teama.spotflickr.R;
 import com.cs550.teama.spotflickr.model.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -26,12 +26,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SignupActivity extends AppCompatActivity implements View.OnClickListener {
-
+    private final static String TAG = "SignupActivity";
     EditText editTextEmail, editTextPassword;
     TextView userInfoText;
     ProgressBar progressBar;
-    String name;
-    String username;
+    String fullname, username, oauth_token, oauth_token_secret, user_nsid;
 
     private FirebaseAuth mAuth;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -47,9 +46,11 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
         progressBar = findViewById(R.id.progressbar);
         // TODO: Edit welcome message to include name and username
         Bundle extras = getIntent().getExtras();
-        name = extras.getString("name");
+        fullname = extras.getString("fullname");
         username = extras.getString("username");
-
+        oauth_token = extras.getString("oauth_token");
+        oauth_token_secret = extras.getString("oauth_token_secret");
+        user_nsid = extras.getString("user_nsid");
         mAuth = FirebaseAuth.getInstance();
 
         findViewById(R.id.buttonSignUp).setOnClickListener(this);
@@ -93,7 +94,8 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
                     List<String> hotspot_list = new ArrayList<String>();
                     hotspot_list.add(mAuth.getCurrentUser().getUid());
 
-                    User user = new User(username, email, password, hotspot_list);
+                    User user = new User(fullname, username, oauth_token, oauth_token_secret,
+                            user_nsid, email, password, hotspot_list);
                     db.collection("users").document(mAuth.getCurrentUser().getUid()).set(user);
 
                     HotspotList hotspotList = new HotspotList("default", "", mAuth.getCurrentUser().getUid());
