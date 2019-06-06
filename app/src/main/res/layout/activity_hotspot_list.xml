@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:id="@+id/drawer_layout"
     android:fitsSystemWindows="true"
-    tools:context=".login.HotspotListActivity"
+    tools:context=".activity.hotspot.HotspotListActivity"
     tools:openDrawer="start">
 
     <RelativeLayout

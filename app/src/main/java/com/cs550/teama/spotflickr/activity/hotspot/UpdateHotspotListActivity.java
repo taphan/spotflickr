@@ -1,4 +1,4 @@
-package com.cs550.teama.spotflickr.login;
+package com.cs550.teama.spotflickr.activity.hotspot;
 
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -17,11 +17,12 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.cs550.teama.spotflickr.HotspotList;
 import com.cs550.teama.spotflickr.R;
-import com.cs550.teama.spotflickr.User;
+import com.cs550.teama.spotflickr.activity.MapFragmentActivity;
+import com.cs550.teama.spotflickr.activity.user.UserProfileFragmentActivity;
+import com.cs550.teama.spotflickr.model.HotspotList;
+import com.cs550.teama.spotflickr.model.User;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;

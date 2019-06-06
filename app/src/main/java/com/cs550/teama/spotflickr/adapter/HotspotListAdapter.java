@@ -1,4 +1,4 @@
-package com.cs550.teama.spotflickr;
+package com.cs550.teama.spotflickr.adapter;
 
 import android.content.Context;
 import android.content.Intent;
@@ -7,10 +7,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 
-import com.cs550.teama.spotflickr.login.UpdateHotspotListActivity;
+import com.cs550.teama.spotflickr.R;
+import com.cs550.teama.spotflickr.activity.hotspot.UpdateHotspotListActivity;
+import com.cs550.teama.spotflickr.model.HotspotList;
 
 import java.util.List;
 

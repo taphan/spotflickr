@@ -13,9 +13,9 @@
         android:supportsRtl="true"
         android:name=".App"
         android:theme="@style/AppTheme">
-        <activity android:name=".login.UpdateHotspotListActivity"></activity>
-        <activity android:name=".login.HotspotListActivity" />
-        <activity android:name=".login.ChangePassword" />
+        <activity android:name=".activity.hotspot.UpdateHotspotListActivity"></activity>
+        <activity android:name=".activity.hotspot.HotspotListActivity" />
+        <activity android:name=".activity.auth.ChangePasswordActivity" />
 
         <meta-data
             android:name="com.naver.maps.map.CLIENT_ID"

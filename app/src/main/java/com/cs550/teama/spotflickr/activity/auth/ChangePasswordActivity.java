@@ -1,4 +1,4 @@
-package com.cs550.teama.spotflickr.login;
+package com.cs550.teama.spotflickr.activity.auth;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -28,7 +28,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-public class ChangePassword extends AppCompatActivity implements View.OnClickListener, NavigationView.OnNavigationItemSelectedListener {
+public class ChangePasswordActivity extends AppCompatActivity implements View.OnClickListener, NavigationView.OnNavigationItemSelectedListener {
 
     private DrawerLayout drawer;
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
@@ -104,7 +104,7 @@ public class ChangePassword extends AppCompatActivity implements View.OnClickLis
                     current_user.updatePassword(password);
                     documentReference.set(current_user);
                     Toast.makeText(getApplicationContext(), "Password Successfully Changed", Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(ChangePassword.this, UserProfileFragmentActivity.class);
+                    Intent intent = new Intent(ChangePasswordActivity.this, UserProfileFragmentActivity.class);
                     startActivity(intent);
                 }
             }

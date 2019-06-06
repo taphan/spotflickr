@@ -1,4 +1,4 @@
-package com.cs550.teama.spotflickr.login;
+package com.cs550.teama.spotflickr.activity.user;
 
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -13,15 +13,18 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.cs550.teama.spotflickr.HotspotList;
+import com.cs550.teama.spotflickr.activity.MapFragmentActivity;
+import com.cs550.teama.spotflickr.activity.auth.LoginActivity;
+import com.cs550.teama.spotflickr.activity.auth.ChangePasswordActivity;
+import com.cs550.teama.spotflickr.activity.hotspot.HotspotListActivity;
+import com.cs550.teama.spotflickr.model.HotspotList;
 import com.cs550.teama.spotflickr.R;
-import com.cs550.teama.spotflickr.User;
+import com.cs550.teama.spotflickr.model.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -31,10 +34,6 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-
-import org.w3c.dom.Text;
-
-import java.util.List;
 
 public class UserProfileFragmentActivity extends AppCompatActivity implements View.OnClickListener, NavigationView.OnNavigationItemSelectedListener {
 
@@ -154,7 +153,7 @@ public class UserProfileFragmentActivity extends AppCompatActivity implements Vi
     public void onClick(View view) {
         switch(view.getId()) {
             case R.id.change_password:
-                startActivity(new Intent(this, ChangePassword.class));
+                startActivity(new Intent(this, ChangePasswordActivity.class));
                 break;
 
             case R.id.delete_account:
