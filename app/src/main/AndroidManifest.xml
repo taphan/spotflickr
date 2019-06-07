@@ -35,7 +35,6 @@
         <activity android:name=".activity.MapFragmentActivity"/>
         <activity android:name=".activity.user.UserProfileFragmentActivity" />
         <activity android:name=".activity.PhotoListActivity"/>
-        <activity android:name=".activity.auth.EmptyOAuthActivity"/>
         <activity
             android:name=".activity.auth.FlickrLoginActivity"
             android:label="@string/app_name">

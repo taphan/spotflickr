@@ -35,23 +35,15 @@ public class FlickrLoginActivity extends AppCompatActivity implements LoginObser
         setContentView(R.layout.activity_flickr_oauth);
 
         toolbar = findViewById(R.id.toolbar);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onLoginFail();
-            }
-        });
+        toolbar.setNavigationOnClickListener(view -> onLoginFail());
 
         webView = findViewById(R.id.webView);
         progressBar_cyclic = findViewById(R.id.progressBar_cyclic);
         progressBar_cyclic.setVisibility(View.GONE);
         swipe = findViewById(R.id.swipe);
-        swipe.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                if (!oauth.getAuthorizationURL().isEmpty())
-                    WebAction(oauth.getAuthorizationURL());
-            }
+        swipe.setOnRefreshListener(() -> {
+            if (!oauth.getAuthorizationURL().isEmpty())
+                WebAction(oauth.getAuthorizationURL());
         });
         oauth = new OAuthService(this);
     }
@@ -90,7 +82,6 @@ public class FlickrLoginActivity extends AppCompatActivity implements LoginObser
                 if (queries != null && queries.containsKey("oauth_verifier")){
                     // The request token is approved
                     // Now get the Access Token with the verifier
-                    System.out.println("------ APPROVED Request token --------");
                     oauth.getAccessToken(queries.get("oauth_verifier"));
                     // hide the webView and show a circle
                     webView.setVisibility(View.GONE);

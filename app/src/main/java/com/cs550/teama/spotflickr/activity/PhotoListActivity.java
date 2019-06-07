@@ -15,11 +15,11 @@ import com.cs550.teama.spotflickr.interfaces.ApiService;
 import com.cs550.teama.spotflickr.model.Photo;
 import com.cs550.teama.spotflickr.model.Photos;
 import com.cs550.teama.spotflickr.network.RetrofitInstance;
+import com.cs550.teama.spotflickr.services.FlickrApiUrlService;
+import com.cs550.teama.spotflickr.services.OAuthService;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -29,6 +29,8 @@ public class PhotoListActivity extends AppCompatActivity {
     private static final String TAG = "PhotoListActivity";
     private static final String API_KEY = "c78af6829b82ef76418e7563ee33fe85";
     private Context context;
+    private String lat;
+    private String lon;
 
     private PhotoAdapter adapter;
     private RecyclerView recyclerView;
@@ -40,16 +42,23 @@ public class PhotoListActivity extends AppCompatActivity {
         setContentView(R.layout.activity_photo_list);
         context = this;
 
-        /* Create handle for the RetrofitInstance interface*/
+        /* Get latitude and longitude coordinates from map*/
+        Bundle extras = getIntent().getExtras();
+        lat = extras.getString("latitude");
+        lon = extras.getString("longitude");
+
+        /* Send request to get photos at this location*/
+        sendRequest();
+    }
+
+    private void sendRequest() {
+        FlickrApiUrlService urlService = prepareUrlService();
         ApiService service = RetrofitInstance.getRetrofitInstance().create(ApiService.class);
-
-        /* Call the method with parameter in the interface to get the photo data*/
-        Map<String, String> query = getQuery();
-        Call<Photos> call = service.getRecentPhotos(query);
-
+        Call<Photos> call = service.getPhotosForLocation(urlService.getRequestUrl());
         call.enqueue(new Callback<Photos>() {
             @Override
             public void onResponse(Call<Photos> call, Response<Photos> response) {
+                Log.d(TAG, "Successful sendRequest");
                 generatePhotoList(response.body().getPhotos().getPhoto());
             }
 
@@ -59,26 +68,19 @@ public class PhotoListActivity extends AppCompatActivity {
                 Log.d(TAG, "onFailure: " + t.getMessage());
             }
         });
-
     }
 
-    private Map<String, String> getQuery() {
-        Map<String, String> query = new HashMap<>();
-        query.put("method", "flickr.photos.getRecent");
-        query.put("api_key", API_KEY);
-        query.put("format", "json");
-        query.put("nojsoncallback", "1");
-        return query;
+    private FlickrApiUrlService prepareUrlService() {
+        FlickrApiUrlService urlService = new FlickrApiUrlService(OAuthService.INSTANCE);
+        urlService.addParam("method", "flickr.photos.geo.photosForLocation");
+        urlService.addParam("lat", lat);
+        urlService.addParam("lon", lon);
+        return urlService;
     }
+
 
     /** Method to generate List of photos using RecyclerView with custom adapter*/
     private void generatePhotoList(ArrayList<Photo> photoArrayList) {
-//        recyclerView = findViewById(R.id.recycler_view_notice_list);
-//        adapter = new PhotoAdapter(photoArrayList);
-//        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(PhotoListActivity.this);
-//        recyclerView.setLayoutManager(layoutManager);
-//        recyclerView.setAdapter(adapter);
-
         List<String> urls = new ArrayList<>();
         for (int i = 0; i < photoArrayList.size(); i++) {
             Photo photo = photoArrayList.get(i);

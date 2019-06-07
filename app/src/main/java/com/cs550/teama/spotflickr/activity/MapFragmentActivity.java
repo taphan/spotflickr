@@ -129,7 +129,7 @@ public class MapFragmentActivity extends AppCompatActivity implements OnMapReady
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
         switch (menuItem.getItemId()) {
             case R.id.nav_profile:
-                startActivity(new Intent(this, UserProfileFragmentActivity.class));
+                startActivity(new Intent(MapFragmentActivity.this, UserProfileFragmentActivity.class));
                 break;
             case R.id.nav_map:
                 break;
@@ -245,6 +245,7 @@ public class MapFragmentActivity extends AppCompatActivity implements OnMapReady
                         marker.setOnClickListener(o -> {
                             Intent intent = new Intent(MapFragmentActivity.this, PhotoListActivity.class);
                             try {
+                                // Send lat and lon to next intent to show photos at these coordinates
                                 intent.putExtra("content", place.getString("_content"));
                                 intent.putExtra("latitude", Double.toString(place.getDouble("latitude")));
                                 intent.putExtra("longitude", Double.toString(place.getDouble("longitude")));
