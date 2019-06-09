@@ -67,8 +67,8 @@ public class SaveHotspotActivity extends AppCompatActivity implements View.OnCli
         TextView textView_longitude = (TextView) findViewById(R.id.textview_longitude);
 
         textView_content.setText(content);
-        textView_latitude.setText(lat);
-        textView_longitude.setText(lon);
+        textView_latitude.setText("Latitude: " + lat);
+        textView_longitude.setText("Longitude: " + lon);
 
         spinner = (Spinner) findViewById(R.id.spinner_hotspot_list);
         hotspot_list_name = new ArrayList<String>();
@@ -106,6 +106,7 @@ public class SaveHotspotActivity extends AppCompatActivity implements View.OnCli
 
         editTextDesc = findViewById(R.id.edittext_desc);
         findViewById(R.id.button_save).setOnClickListener(this);
+        findViewById(R.id.textview_create_list).setOnClickListener(this);
     }
 
     @Override
@@ -153,6 +154,14 @@ public class SaveHotspotActivity extends AppCompatActivity implements View.OnCli
                                 Toast.makeText(SaveHotspotActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
                             }
                         });
+                break;
+            case R.id.textview_create_list:
+                Intent intent = new Intent(SaveHotspotActivity.this, CreateHotspotListActivity.class);
+                intent.putExtra("content", content);
+                intent.putExtra("place_id", place_id);
+                intent.putExtra("latitude", lat);
+                intent.putExtra("longitude", lon);
+                startActivity(intent);
                 break;
         }
     }

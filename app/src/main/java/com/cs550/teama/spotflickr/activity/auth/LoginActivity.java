@@ -77,34 +77,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     new String[]{Manifest.permission.INTERNET, Manifest.permission.ACCESS_FINE_LOCATION},
                     100);
         }
-
-/*            // If user denied to permission once before,
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.INTERNET)
-                    || ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
-
-                // 3-2. 요청을 진행하기 전에 사용자가에게 퍼미션이 필요한 이유를 설명해줄 필요가 있습니다.
-                Snackbar.make(, "This APP requires permissions for INTERNET and ACCESS_FINE_LOCATION!",
-                        Snackbar.LENGTH_INDEFINITE).setAction("OK", new View.OnClickListener() {
-
-                    @Override
-                    public void onClick(View view) {
-
-                        // 3-3. 사용자게에 퍼미션 요청을 합니다. 요청 결과는 onRequestPermissionResult에서 수신됩니다.
-                        ActivityCompat.requestPermissions( LoginActivity.this,
-                                new String[]{Manifest.permission.INTERNET,Manifest.permission.ACCESS_FINE_LOCATION},
-                                1);
-                    }
-                }).show();
-
-
-            } else {
-                // 4-1. 사용자가 퍼미션 거부를 한 적이 없는 경우에는 퍼미션 요청을 바로 합니다.
-                // 요청 결과는 onRequestPermissionResult에서 수신됩니다.
-                ActivityCompat.requestPermissions( this, REQUIRED_PERMISSIONS,
-                        PERMISSIONS_REQUEST_CODE);
-            }
-
-        }*/
     }
 
     private void userLogin() {
@@ -155,7 +127,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         Intent intent;
         switch (view.getId()) {
             case R.id.textViewSignup:
-//                startActivity(new Intent(this, SignupActivity.class));
                 Intent myIntent = new Intent(LoginActivity.this, FlickrLoginActivity.class);
                 startActivityForResult(myIntent, flickrLoginActivityRequestCode);
                 break;
@@ -197,8 +168,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 md = MessageDigest.getInstance("SHA");
                 md.update(signature.toByteArray());
                 Log.d("KeyHash:", Base64.encodeToString(md.digest(), Base64.DEFAULT));
-
-
             }
         } catch (Exception e) {
             Log.e("name not found", e.toString());

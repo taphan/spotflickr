@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activity.hotspot.SaveHotspotActivity">
+    tools:context=".activity.hotspot.CreateHotspotListActivity">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -20,52 +20,26 @@
             android:padding="16dp">
 
             <TextView
-                android:id="@+id/textview_content"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
-                android:text="Hotspot Name"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="7dp"
+                android:text="Create New Hotspot List"
+                android:textAlignment="center"
                 android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
                 android:textSize="20dp"
                 android:textColor="@color/colorPrimaryDark" />
 
-            <TextView
-                android:id="@+id/textview_latitude"
+            <EditText
+                android:id="@+id/edittext_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="5dp"
-                android:text="Latitude"
-                android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
-                android:textSize="16dp"
-                android:textColor="@color/colorPrimaryDark" />
-
-            <TextView
-                android:id="@+id/textview_longitude"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
-                android:text="Longitude"
-                android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
-                android:textSize="16dp"
-                android:textColor="@color/colorPrimaryDark" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
-                android:text="Choose which hotspot to add:"
-                android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
-                android:textSize="16dp"
-                android:textColor="@color/colorPrimaryDark" />
-            
-            <Spinner
-                android:id="@+id/spinner_hotspot_list"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
-                android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
-                android:textSize="16dp"
-                android:textColor="@color/colorPrimaryDark"></Spinner>
+                android:layout_marginTop="5dp"
+                android:background="@drawable/edittext_background"
+                android:hint="New Hotspot List Name"
+                android:padding="10dp"
+                android:textSize="15dp"/>
 
             <EditText
                 android:id="@+id/edittext_desc"
@@ -86,20 +60,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="7dp"
                 android:background="@drawable/button_background"
-                android:text="Save Hotspot"
+                android:text="Create New Hotspot List"
                 android:textAllCaps="false"
                 android:textColor="@color/colorAccent" />
-
-            <TextView
-                android:id="@+id/textview_create_list"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="15dp"
-                android:text="Don't have proper hotspot list? Create new one HERE!"
-                android:textAlignment="center"
-                android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
-                android:textSize="14dp"
-                android:textColor="@color/colorPrimaryDark" />
 
         </LinearLayout>
 
@@ -131,10 +94,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 style="@style/TextAppearance.Widget.AppCompat.Toolbar.Title"
-                android:text="Save Hotspot" />
+                android:text="Create Hotspot List" />
 
         </android.support.v7.widget.Toolbar>
-
 
     </LinearLayout>
 
