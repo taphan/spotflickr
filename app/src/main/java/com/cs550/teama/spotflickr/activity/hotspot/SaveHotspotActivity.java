@@ -33,6 +33,7 @@ import java.util.List;
 public class SaveHotspotActivity extends AppCompatActivity implements View.OnClickListener {
 
     private String content;
+    private String place_id;
     private String lat;
     private String lon;
 
@@ -57,6 +58,7 @@ public class SaveHotspotActivity extends AppCompatActivity implements View.OnCli
 
         Bundle extras = getIntent().getExtras();
         content = extras.getString("content");
+        place_id = extras.getString("place_id");
         lat = extras.getString("latitude");
         lon = extras.getString("longitude");
 
@@ -139,6 +141,7 @@ public class SaveHotspotActivity extends AppCompatActivity implements View.OnCli
 
                                 Intent intent = new Intent(SaveHotspotActivity.this, PhotoListActivity.class);
                                 intent.putExtra("content", content);
+                                intent.putExtra("place_id", place_id);
                                 intent.putExtra("latitude", lat);
                                 intent.putExtra("longitude", lon);
                                 startActivity(intent);

@@ -30,6 +30,10 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class UpdateHotspotListActivity extends AppCompatActivity implements View.OnClickListener, NavigationView.OnNavigationItemSelectedListener {
 
@@ -39,6 +43,7 @@ public class UpdateHotspotListActivity extends AppCompatActivity implements View
     private EditText editTextDesc;
 
     private HotspotList hotspotList;
+    private List<String> hotspotListNames;
 
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
@@ -49,6 +54,22 @@ public class UpdateHotspotListActivity extends AppCompatActivity implements View
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_update_hotspot_list);
+
+        hotspotListNames = new ArrayList<String>();
+
+        db.collection("hotspot lists").whereEqualTo("user_id", mAuth.getCurrentUser().getUid())
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        List<DocumentSnapshot> list = queryDocumentSnapshots.getDocuments();
+
+                        for (DocumentSnapshot d : list) {
+                            HotspotList hList = d.toObject(HotspotList.class);
+                            hotspotListNames.add(hList.getName());
+                        }
+                    }
+                });
 
         hotspotList = (HotspotList) getIntent().getSerializableExtra("hotspotList");
 
@@ -99,6 +120,14 @@ public class UpdateHotspotListActivity extends AppCompatActivity implements View
             return true;
         }
 
+        for (int i = 0; i < hotspotListNames.size(); i++) {
+            if (name.equals(hotspotListNames.get(i)) && !hotspotList.getName().equals(name)) {
+                editTextName.setError("Same name already exists");
+                editTextName.requestFocus();
+                return true;
+            }
+        }
+
         return false;
     }
 
@@ -121,6 +150,7 @@ public class UpdateHotspotListActivity extends AppCompatActivity implements View
                     Toast.makeText(UpdateHotspotListActivity.this, "Hotspot List Updated", Toast.LENGTH_LONG).show();
                 }
             });
+            startActivity(new Intent(this, HotspotListActivity.class));
         }
     }
 
@@ -143,6 +173,9 @@ public class UpdateHotspotListActivity extends AppCompatActivity implements View
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                             if (task.isSuccessful()) {
+                                for (int i = 0; i < hotspotList.getHotspotIdSize(); i++) {
+                                    db.collection("hotspots").document(hotspotList.getHotspot_id().get(i)).delete();
+                                }
                                 current_user.deleteHotspotList(hotspotList.getListId());
                                 userDocRef.set(current_user);
                                 Toast.makeText(UpdateHotspotListActivity.this, "Hotspot list deleted", Toast.LENGTH_LONG).show();
@@ -160,7 +193,6 @@ public class UpdateHotspotListActivity extends AppCompatActivity implements View
         switch (v.getId()) {
             case R.id.button_update:
                 updateHotspotList();
-                startActivity(new Intent(this, HotspotListActivity.class));
                 break;
 
             case R.id.button_delete:

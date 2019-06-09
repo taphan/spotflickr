@@ -154,6 +154,7 @@ public class PhotoListActivity extends AppCompatActivity implements View.OnClick
             case R.id.adding_hotspot:
                 Intent intent = new Intent(this, SaveHotspotActivity.class);
                 intent.putExtra("content", content);
+                intent.putExtra("place_id", place_id);
                 intent.putExtra("latitude", lat);
                 intent.putExtra("longitude", lon);
                 startActivity(intent);

@@ -61,7 +61,7 @@ public class UserProfileFragmentActivity extends AppCompatActivity implements Vi
 
         hotspotListNames = new ArrayList<String>();
 
-        db.collection("hotspot lists").whereEqualTo("userID", mAuth.getCurrentUser().getUid())
+        db.collection("hotspot lists").whereEqualTo("user_id", mAuth.getCurrentUser().getUid())
                 .get()
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
@@ -167,9 +167,24 @@ public class UserProfileFragmentActivity extends AppCompatActivity implements Vi
             public void onComplete(@NonNull Task<Void> task) {
                 progressBar.setVisibility(View.GONE);
                 if (task.isSuccessful()) {
+                    // delete all the hotspot lists document
                     for (int i = 0; i < current_user.getHotspotIdListSize(); i++) {
+
+                        // delete all the hotspots documents in each of the hotspot lists
+                        db.collection("hotspot lists").document(current_user.getHotspot_id_list().get(i)).get()
+                                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                    @Override
+                                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                        HotspotList hList = documentSnapshot.toObject(HotspotList.class);
+                                        for (int i = 0; i < hList.getHotspotIdSize(); i++) {
+                                            db.collection("hotspots").document(hList.getHotspot_id().get(i)).delete();
+                                        }
+                                    }
+                                });
+
                         db.collection("hotspot lists").document(current_user.getHotspot_id_list().get(i)).delete();
                     }
+                    // delete the user document
                     userDocRef.delete();
                     Toast.makeText(getApplicationContext(), "Account Successfully Deleted", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(UserProfileFragmentActivity.this, LoginActivity.class);
