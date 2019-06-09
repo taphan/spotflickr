@@ -73,7 +73,6 @@ public class FlickrApiUrlService {
         params.put("nojsoncallback", "1");
         params.put("format", "json");
         params.put("api_key", API_KEY);
-//        params.put("oauth_token", oAuthService.getAccessTokenResponse().get("oauth_token")); // Get from other class (OAuthService)
         // TODO: Retrieve oauth_token and oauth_token_secret fields from users document
         params.put("oauth_token", "72157708739531846-c40bd7aa65190570");
     }
@@ -85,8 +84,9 @@ public class FlickrApiUrlService {
     public String getRequestUrl() {
 //        String signature = getSignature(params, SIGNATURE_KEY + "&" +
 //                oAuthService.getAccessTokenResponse().get("oauth_token_secret"), BASE_URL);
+        String oauth_token_secret = "08820c8592172f23";
         String signature = getSignature(params, SIGNATURE_KEY + "&" +
-                "08820c8592172f23", BASE_URL);
+                oauth_token_secret, BASE_URL);
         addParam("oauth_signature", Utils.oauthEncode(signature));
         return BASE_URL + "?" + getQueryTextByParams(params);
     }

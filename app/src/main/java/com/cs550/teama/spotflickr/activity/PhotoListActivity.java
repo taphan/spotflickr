@@ -32,6 +32,7 @@ public class PhotoListActivity extends AppCompatActivity implements View.OnClick
     private static final String TAG = "PhotoListActivity";
     private static final String API_KEY = "c78af6829b82ef76418e7563ee33fe85";
     private Context context;
+    private String place_id;
     private String lat;
     private String lon;
     private String content;
@@ -46,9 +47,11 @@ public class PhotoListActivity extends AppCompatActivity implements View.OnClick
         setContentView(R.layout.activity_photo_list);
         context = this;
 
-        /* Get latitude and longitude coordinates from map*/
+        /* Get place_id, latitude and longitude coordinates from map*/
         Bundle extras = getIntent().getExtras();
+
         content = extras.getString("content");
+        place_id = extras.getString("place_id");
         lat = extras.getString("latitude");
         lon = extras.getString("longitude");
 
@@ -60,6 +63,7 @@ public class PhotoListActivity extends AppCompatActivity implements View.OnClick
     private void sendRequest() {
         FlickrApiUrlService urlService = prepareUrlService();
         ApiService service = RetrofitInstance.getRetrofitInstance().create(ApiService.class);
+        Log.d(TAG, urlService.getRequestUrl());
         Call<Photos> call = service.getPhotosForLocation(urlService.getRequestUrl());
         call.enqueue(new Callback<Photos>() {
             @Override
@@ -78,9 +82,12 @@ public class PhotoListActivity extends AppCompatActivity implements View.OnClick
 
     private FlickrApiUrlService prepareUrlService() {
         FlickrApiUrlService urlService = new FlickrApiUrlService(OAuthService.INSTANCE);
-        urlService.addParam("method", "flickr.photos.geo.photosForLocation");
+//        urlService.addParam("method", "flickr.photos.geo.photosForLocation");
+        urlService.addParam("method", "flickr.photos.search");
+        urlService.addParam("place_id", place_id);
         urlService.addParam("lat", lat);
         urlService.addParam("lon", lon);
+        urlService.addParam("radius", String.valueOf(1));
         return urlService;
     }
 
