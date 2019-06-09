@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.cs550.teama.spotflickr.R;
+import com.cs550.teama.spotflickr.activity.hotspot.UpdateHotspotActivity;
 import com.cs550.teama.spotflickr.model.Hotspot;
 
 import java.util.List;
@@ -39,8 +40,8 @@ public class HotspotAdapter extends RecyclerView.Adapter<HotspotAdapter.HotspotV
         Hotspot hotspot = hotspotList.get(i);
 
         hotspotViewHolder.textViewName.setText(hotspot.getName());
-        hotspotViewHolder.textViewLatitude.setText(Float.toString(hotspot.getLatitude()));
-        hotspotViewHolder.textViewLongitude.setText(Float.toString(hotspot.getLongitude()));
+        hotspotViewHolder.textViewLatitude.setText("Latitude: "+ Float.toString(hotspot.getLatitude()));
+        hotspotViewHolder.textViewLongitude.setText("Longitude: "+ Float.toString(hotspot.getLongitude()));
         hotspotViewHolder.textViewDesc.setText(hotspot.getDescription());
     }
 
@@ -72,10 +73,10 @@ public class HotspotAdapter extends RecyclerView.Adapter<HotspotAdapter.HotspotV
             Hotspot hotspot = hotspotList.get(getAdapterPosition());
             Intent intent;
             switch (v.getId()) {
-                case R.id.button_list_manager:
-                    //intent = new Intent(mCtx, UpdateHotspotActivity.class);
-                    //intent.putExtra("hotspot", hotspot);
-                    //mCtx.startActivity(intent);
+                case R.id.button_hotspot_manager:
+                    intent = new Intent(mCtx, UpdateHotspotActivity.class);
+                    intent.putExtra("hotspot", hotspot);
+                    mCtx.startActivity(intent);
                     break;
             }
         }

@@ -150,7 +150,9 @@ public class UpdateHotspotListActivity extends AppCompatActivity implements View
                     Toast.makeText(UpdateHotspotListActivity.this, "Hotspot List Updated", Toast.LENGTH_LONG).show();
                 }
             });
-            startActivity(new Intent(this, HotspotListActivity.class));
+
+            Intent intent = new Intent(this, HotspotListActivity.class);
+            startActivity(intent);
         }
     }
 
@@ -180,7 +182,8 @@ public class UpdateHotspotListActivity extends AppCompatActivity implements View
                                 userDocRef.set(current_user);
                                 Toast.makeText(UpdateHotspotListActivity.this, "Hotspot list deleted", Toast.LENGTH_LONG).show();
                                 finish();
-                                startActivity(new Intent(UpdateHotspotListActivity.this, HotspotListActivity.class));
+                                Intent intent = new Intent(UpdateHotspotListActivity.this, HotspotListActivity.class);
+                                startActivity(intent);
                             }
                         }
                     });

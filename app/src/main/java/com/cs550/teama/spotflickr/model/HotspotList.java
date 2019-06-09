@@ -25,6 +25,7 @@ public class HotspotList implements Serializable {
     }
 
 
+    public void setDescription(String desc) { this.description = desc; }
     public void setUser_id(String userId) { this.user_id = userId; }
     public void setListId(String listId) {
         this.listId = listId;
