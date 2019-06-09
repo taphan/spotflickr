@@ -1,14 +1,17 @@
 package com.cs550.teama.spotflickr.activity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.View;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import com.cs550.teama.spotflickr.R;
+import com.cs550.teama.spotflickr.activity.hotspot.SaveHotspotActivity;
 import com.cs550.teama.spotflickr.adapter.ImageListAdapter;
 import com.cs550.teama.spotflickr.adapter.PhotoAdapter;
 import com.cs550.teama.spotflickr.interfaces.ApiService;
@@ -25,12 +28,13 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class PhotoListActivity extends AppCompatActivity {
+public class PhotoListActivity extends AppCompatActivity implements View.OnClickListener {
     private static final String TAG = "PhotoListActivity";
     private static final String API_KEY = "c78af6829b82ef76418e7563ee33fe85";
     private Context context;
     private String lat;
     private String lon;
+    private String content;
 
     private PhotoAdapter adapter;
     private RecyclerView recyclerView;
@@ -44,9 +48,11 @@ public class PhotoListActivity extends AppCompatActivity {
 
         /* Get latitude and longitude coordinates from map*/
         Bundle extras = getIntent().getExtras();
+        content = extras.getString("content");
         lat = extras.getString("latitude");
         lon = extras.getString("longitude");
 
+        findViewById(R.id.adding_hotspot).setOnClickListener(this);
         /* Send request to get photos at this location*/
         sendRequest();
     }
@@ -108,5 +114,18 @@ public class PhotoListActivity extends AppCompatActivity {
         sb.append(secret);
         sb.append(".jpg");
         return sb.toString();
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.adding_hotspot:
+                Intent intent = new Intent(this, SaveHotspotActivity.class);
+                intent.putExtra("content", content);
+                intent.putExtra("latitude", lat);
+                intent.putExtra("longitude", lon);
+                startActivity(intent);
+                break;
+        }
     }
 }

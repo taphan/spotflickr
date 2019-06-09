@@ -92,13 +92,14 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
                 progressBar.setVisibility(View.GONE);
                 if (task.isSuccessful()) {
                     List<String> hotspot_list = new ArrayList<String>();
+                    List<String> hotspot = new ArrayList<String>();
                     hotspot_list.add(mAuth.getCurrentUser().getUid());
 
                     User user = new User(fullname, username, oauth_token, oauth_token_secret,
                             user_nsid, email, password, hotspot_list);
                     db.collection("users").document(mAuth.getCurrentUser().getUid()).set(user);
 
-                    HotspotList hotspotList = new HotspotList("default", "default hotspot list", mAuth.getCurrentUser().getUid());
+                    HotspotList hotspotList = new HotspotList("default", "default hotspot list", mAuth.getCurrentUser().getUid(), hotspot);
                     db.collection("hotspot lists").document(mAuth.getCurrentUser().getUid()).set(hotspotList);
 
                     Toast.makeText(getApplicationContext(), "User Registration Successful", Toast.LENGTH_SHORT).show();

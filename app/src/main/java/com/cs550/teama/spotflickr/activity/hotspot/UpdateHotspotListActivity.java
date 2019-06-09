@@ -53,7 +53,7 @@ public class UpdateHotspotListActivity extends AppCompatActivity implements View
         hotspotList = (HotspotList) getIntent().getSerializableExtra("hotspotList");
 
         Toolbar toolbar = findViewById(R.id.toolbar);
-        toolbar.setTitle("Hotspot Lists");
+        toolbar.setTitle("Hotspot List Manager");
         setSupportActionBar(toolbar);
 
         drawer = findViewById(R.id.drawer_layout);
@@ -110,14 +110,11 @@ public class UpdateHotspotListActivity extends AppCompatActivity implements View
 
             CollectionReference dbProducts = db.collection("hotspot lists");
 
-            HotspotList hList = new HotspotList(
-                    name,
-                    desc,
-                    mAuth.getCurrentUser().getUid()
-            );
-
             dbProducts.document(hotspotList.getListId())
-                    .set(hList)
+                    .update(
+                            "name", name,
+                            "description", desc
+                    )
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
                 public void onSuccess(Void aVoid) {
@@ -128,17 +125,33 @@ public class UpdateHotspotListActivity extends AppCompatActivity implements View
     }
 
     private void deleteHotspotList() {
-        db.collection("hotspot lists").document(hotspotList.getListId()).delete()
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            Toast.makeText(UpdateHotspotListActivity.this, "Product deleted", Toast.LENGTH_LONG).show();
-                            finish();
-                            startActivity(new Intent(UpdateHotspotListActivity.this, HotspotListActivity.class));
+        if (current_user.getHotspotIdListSize() == 1) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Cannot delete the list! You need at least one hotspot list in your account!");
+
+            builder.setPositiveButton("Confirmed", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+
+                }
+            });
+            AlertDialog ad = builder.create();
+            ad.show();
+        } else {
+            db.collection("hotspot lists").document(hotspotList.getListId()).delete()
+                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if (task.isSuccessful()) {
+                                current_user.deleteHotspotList(hotspotList.getListId());
+                                userDocRef.set(current_user);
+                                Toast.makeText(UpdateHotspotListActivity.this, "Hotspot list deleted", Toast.LENGTH_LONG).show();
+                                finish();
+                                startActivity(new Intent(UpdateHotspotListActivity.this, HotspotListActivity.class));
+                            }
                         }
-                    }
-                });
+                    });
+        }
 
     }
 

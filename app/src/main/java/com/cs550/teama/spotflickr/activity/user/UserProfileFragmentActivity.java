@@ -34,12 +34,18 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class UserProfileFragmentActivity extends AppCompatActivity implements View.OnClickListener, NavigationView.OnNavigationItemSelectedListener {
 
     private DrawerLayout drawer;
     private EditText editTextName;
     private EditText editTextDesc;
+    private List<String> hotspotListNames;
+
     TextView user_name, user_email;
     ProgressBar progressBar;
 
@@ -52,6 +58,22 @@ public class UserProfileFragmentActivity extends AppCompatActivity implements Vi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_profile);
+
+        hotspotListNames = new ArrayList<String>();
+
+        db.collection("hotspot lists").whereEqualTo("userID", mAuth.getCurrentUser().getUid())
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        List<DocumentSnapshot> list = queryDocumentSnapshots.getDocuments();
+
+                        for (DocumentSnapshot d : list) {
+                            HotspotList hList = d.toObject(HotspotList.class);
+                            hotspotListNames.add(hList.getName());
+                        }
+                    }
+                });
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle("User Profile");
@@ -127,6 +149,14 @@ public class UserProfileFragmentActivity extends AppCompatActivity implements Vi
             return true;
         }
 
+        for (int i = 0; i < hotspotListNames.size(); i++) {
+            if (name.equals(hotspotListNames.get(i))) {
+                editTextName.setError("Same name already exists");
+                editTextName.requestFocus();
+                return true;
+            }
+        }
+
         return false;
     }
 
@@ -187,10 +217,12 @@ public class UserProfileFragmentActivity extends AppCompatActivity implements Vi
                 if (!hasValidationErrors(name, desc)) {
                     CollectionReference dbProducts = db.collection("hotspot lists");
 
+                    List<String> hotspot = new ArrayList<String>();
                     HotspotList hotspotList = new HotspotList(
                             name,
                             desc,
-                            mAuth.getCurrentUser().getUid()
+                            mAuth.getCurrentUser().getUid(),
+                            hotspot
                     );
 
                     dbProducts.add(hotspotList)
