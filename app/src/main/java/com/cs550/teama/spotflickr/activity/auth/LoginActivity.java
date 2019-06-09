@@ -70,7 +70,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
             findViewById(R.id.textViewSignup).setOnClickListener(this);
             findViewById(R.id.buttonLogin).setOnClickListener(this);
-            findViewById(R.id.photo_button).setOnClickListener(this);
 
 
         } else {
@@ -162,10 +161,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 break;
             case R.id.buttonLogin:
                 userLogin();
-                break;
-            case R.id.photo_button:
-                intent = new Intent(view.getContext(), PhotoListActivity.class);
-                startActivity(intent);
                 break;
         }
 

@@ -99,7 +99,7 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
                             user_nsid, email, password, hotspot_list);
                     db.collection("users").document(mAuth.getCurrentUser().getUid()).set(user);
 
-                    HotspotList hotspotList = new HotspotList("default", "default hotspot list", mAuth.getCurrentUser().getUid(), hotspot);
+                    HotspotList hotspotList = new HotspotList("Favorites", "default hotspot list", mAuth.getCurrentUser().getUid(), hotspot);
                     db.collection("hotspot lists").document(mAuth.getCurrentUser().getUid()).set(hotspotList);
 
                     Toast.makeText(getApplicationContext(), "User Registration Successful", Toast.LENGTH_SHORT).show();
