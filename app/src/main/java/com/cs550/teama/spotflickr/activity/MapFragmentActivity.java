@@ -17,6 +17,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -83,8 +84,8 @@ public class MapFragmentActivity extends AppCompatActivity implements OnMapReady
 
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-        final TextView user_name = (TextView) navigationView.getHeaderView(0).findViewById(R.id.user_name);
-        final TextView user_email = (TextView) navigationView.getHeaderView(0).findViewById(R.id.user_email);
+        final TextView user_name = navigationView.getHeaderView(0).findViewById(R.id.user_name);
+        final TextView user_email = navigationView.getHeaderView(0).findViewById(R.id.user_email);
 
         documentReference.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
@@ -240,13 +241,15 @@ public class MapFragmentActivity extends AppCompatActivity implements OnMapReady
                 for (int i = 0; i < this.placeList.length(); i++) {
                     try {
                         final JSONObject place = this.placeList.getJSONObject(i);
+                        Log.d("MapFragmentActivity: ", String.valueOf(place));
                         Marker marker = new Marker();
                         marker.setPosition(new LatLng(place.getDouble("latitude"), place.getDouble("longitude")));
                         marker.setOnClickListener(o -> {
                             Intent intent = new Intent(MapFragmentActivity.this, PhotoListActivity.class);
                             try {
-                                // Send lat and lon to next intent to show photos at these coordinates
-                                intent.putExtra("content", place.getString("_content"));
+                                // Send place info to next intent to show photos at these coordinates
+                                intent.putExtra("content", place.getString("_content"));  // Place name
+                                intent.putExtra("place_id", place.getString("place_id"));
                                 intent.putExtra("latitude", Double.toString(place.getDouble("latitude")));
                                 intent.putExtra("longitude", Double.toString(place.getDouble("longitude")));
                                 startActivity(intent);
