@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationManager;
 import android.media.Image;
@@ -77,9 +78,11 @@ public class MapFragmentActivity extends AppCompatActivity implements OnMapReady
     private MapFragment mapFragment;
     private LatLng[] route;
     private LatLng dest_place;
-    private ImageButton routeButton;
+    private Button routeButton;
+    private Button shortButton;
     private ImageButton photoListButton;
-
+    private PathOverlay[] pathes;
+    private Marker[] markers;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -109,9 +112,10 @@ public class MapFragmentActivity extends AppCompatActivity implements OnMapReady
         }
         routeButton = findViewById(R.id.route_button);
         photoListButton = findViewById(R.id.photolist_button);
+        shortButton = findViewById(R.id.short_route_button);
         photoListButton.setOnClickListener(this);
         routeButton.setOnClickListener(this);
-
+        shortButton.setOnClickListener(this);
         lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         this.current_location = new LatLng(location.getLatitude(), location.getLongitude());
@@ -205,14 +209,29 @@ public class MapFragmentActivity extends AppCompatActivity implements OnMapReady
             return;
         }
         lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-//        Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         CameraUpdate cameraUpdate = CameraUpdate.scrollTo(this.current_location);
         naverMap.moveCamera(cameraUpdate);
         locationOverlay.setPosition(this.current_location);
-
         UiSettings uiSettings = naverMap.getUiSettings();
         uiSettings.setLocationButtonEnabled(true);
 
+        if(dest_place != null){
+            if (pathes != null) {
+                for (int i = 0; i < pathes.length; i++) {
+                    pathes[i].setMap(null);
+                }
+            }
+            if (markers != null) {
+                for (int i = 0; i < markers.length; i++) {
+                    markers[i].setMap(null);
+                }
+            }
+            PathOverlay short_path = new PathOverlay();
+            short_path.setCoords(Arrays.asList(current_location , dest_place));
+            short_path.setMap(naverMap);
+            pathes = new PathOverlay[]{short_path};
+
+        }
 
     }
 
@@ -255,6 +274,9 @@ public class MapFragmentActivity extends AppCompatActivity implements OnMapReady
             case R.id.route_button:
                 RouteHttpTask task = new RouteHttpTask();
                 task.execute(current_location);
+            case R.id.short_route_button:
+                mapFragment.getMapAsync(this);
+
         }
     }
 
@@ -316,7 +338,8 @@ public class MapFragmentActivity extends AppCompatActivity implements OnMapReady
                             try {
                                 dest_place = new LatLng(place.getDouble("latitude"), place.getDouble("longitude"));
                                 routeButton.setVisibility(View.VISIBLE);
-//                                photoListButton.setVisibility(View.VISIBLE);
+                                photoListButton.setVisibility(View.VISIBLE);
+                                shortButton.setVisibility(View.VISIBLE);
                                 return true;
                             } catch (JSONException e) {
                                 e.printStackTrace();
@@ -393,6 +416,18 @@ public class MapFragmentActivity extends AppCompatActivity implements OnMapReady
         @Override
         @UiThread
         public void onMapReady(@NonNull NaverMap naverMap){
+            PathOverlay[] new_pathes = new PathOverlay[transit_list.length()];
+            Marker[] new_markers = new Marker[transit_list.length()];
+            if (pathes != null) {
+                for (int j = 0; j < pathes.length; j++) {
+                    pathes[j].setMap(null);
+                }
+            }
+            if (markers != null) {
+                for (int i = 0; i < markers.length; i++) {
+                    markers[i].setMap(null);
+                }
+            }
             for (int i=0; i<transit_list.length();i++){
                 try {
                     JSONObject step =transit_list.getJSONObject(i);
@@ -403,6 +438,8 @@ public class MapFragmentActivity extends AppCompatActivity implements OnMapReady
                     marker.setPosition(new LatLng(target_location.getDouble("lat"),target_location.getDouble("lng")));
                     marker.setIcon(MarkerIcons.YELLOW);
                     marker.setMap(naverMap);
+                    new_markers[i] = marker;
+
                     InfoWindow infoWindow = new InfoWindow();
                     infoWindow.setAdapter(new InfoWindow.DefaultTextAdapter(getApplicationContext()) {
                         @NonNull
@@ -418,16 +455,22 @@ public class MapFragmentActivity extends AppCompatActivity implements OnMapReady
                         }
                     });
                     infoWindow.open(marker);
+
                     PathOverlay path = new PathOverlay();
                     path.setCoords(Arrays.asList(
                             new LatLng(target_location.getDouble("lat"),target_location.getDouble("lng")),
                             new LatLng(end_location.getDouble("lat"),end_location.getDouble("lng"))
                     ));
+                    path.setColor(Color.GRAY);
                     path.setMap(naverMap);
+                    new_pathes[i] = path;
+
                 } catch (JSONException e) {;
                     e.printStackTrace();
                 }
             }
+            pathes = new_pathes;
+            markers = new_markers;
         }
     }
 }
