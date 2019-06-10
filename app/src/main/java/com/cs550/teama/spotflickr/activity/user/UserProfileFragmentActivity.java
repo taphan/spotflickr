@@ -20,6 +20,7 @@ import android.widget.Toast;
 
 import com.cs550.teama.spotflickr.activity.MapFragmentActivity;
 import com.cs550.teama.spotflickr.activity.auth.CurrentUserPasswordActivity;
+import com.cs550.teama.spotflickr.activity.auth.DeleteAccountActivity;
 import com.cs550.teama.spotflickr.activity.auth.LoginActivity;
 import com.cs550.teama.spotflickr.activity.auth.ChangePasswordActivity;
 import com.cs550.teama.spotflickr.activity.hotspot.HotspotListActivity;
@@ -161,40 +162,6 @@ public class UserProfileFragmentActivity extends AppCompatActivity implements Vi
         return false;
     }
 
-    private void deleteUser() {
-        progressBar.setVisibility(View.VISIBLE);
-        mAuth.getCurrentUser().delete().addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                progressBar.setVisibility(View.GONE);
-                if (task.isSuccessful()) {
-                    // delete all the hotspot lists document
-                    for (int i = 0; i < current_user.getHotspotIdListSize(); i++) {
-
-                        // delete all the hotspots documents in each of the hotspot lists
-                        db.collection("hotspot lists").document(current_user.getHotspot_id_list().get(i)).get()
-                                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                                    @Override
-                                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                        HotspotList hList = documentSnapshot.toObject(HotspotList.class);
-                                        for (int i = 0; i < hList.getHotspotIdSize(); i++) {
-                                            db.collection("hotspots").document(hList.getHotspot_id().get(i)).delete();
-                                        }
-                                    }
-                                });
-
-                        db.collection("hotspot lists").document(current_user.getHotspot_id_list().get(i)).delete();
-                    }
-                    // delete the user document
-                    userDocRef.delete();
-                    Toast.makeText(getApplicationContext(), "Account Successfully Deleted", Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(UserProfileFragmentActivity.this, LoginActivity.class);
-                    startActivity(intent);
-                }
-            }
-        });
-    }
-
     @Override
     public void onClick(View view) {
         switch(view.getId()) {
@@ -210,7 +177,9 @@ public class UserProfileFragmentActivity extends AppCompatActivity implements Vi
                 builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        deleteUser();
+
+                        Intent intent = new Intent(UserProfileFragmentActivity.this, DeleteAccountActivity.class);
+                        startActivity(intent);
                     }
                 });
 
