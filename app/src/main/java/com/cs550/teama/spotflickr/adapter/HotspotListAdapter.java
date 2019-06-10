@@ -7,9 +7,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.cs550.teama.spotflickr.R;
+import com.cs550.teama.spotflickr.activity.hotspot.HotspotActivity;
 import com.cs550.teama.spotflickr.activity.hotspot.UpdateHotspotListActivity;
 import com.cs550.teama.spotflickr.model.HotspotList;
 
@@ -49,26 +51,35 @@ public class HotspotListAdapter extends RecyclerView.Adapter<HotspotListAdapter.
     class HotspotListViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         TextView textViewName, textViewDesc;
-        //Button buttonListManager;
+        Button buttonListManager;
 
         public HotspotListViewHolder(View itemView) {
             super(itemView);
 
             textViewName = itemView.findViewById(R.id.textview_name);
             textViewDesc = itemView.findViewById(R.id.textview_desc);
-            //buttonListManager = itemView.findViewById(R.id.button_list_manager);
+            buttonListManager = itemView.findViewById(R.id.button_list_manager);
 
             itemView.setOnClickListener(this);
-            //buttonListManager.setOnClickListener(this);
+            buttonListManager.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View v) {
             HotspotList hotspotList = hotspotListList.get(getAdapterPosition());
-            Intent intent = new Intent(mCtx, UpdateHotspotListActivity.class);
-            intent.putExtra("hotspotList", hotspotList);
-            mCtx.startActivity(intent);
-
+            Intent intent;
+            switch (v.getId()) {
+                case R.id.button_list_manager:
+                    intent = new Intent(mCtx, UpdateHotspotListActivity.class);
+                    intent.putExtra("hotspotList", hotspotList);
+                    mCtx.startActivity(intent);
+                    break;
+                default:
+                    intent = new Intent(mCtx, HotspotActivity.class);
+                    intent.putExtra("hotspotList", hotspotList);
+                    mCtx.startActivity(intent);
+                    break;
+            }
         }
     }
 }

@@ -19,6 +19,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -83,6 +84,7 @@ public class MapFragmentActivity extends AppCompatActivity implements OnMapReady
     private ImageButton photoListButton;
     private PathOverlay[] pathes;
     private Marker[] markers;
+    private String target_place_id;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -121,8 +123,8 @@ public class MapFragmentActivity extends AppCompatActivity implements OnMapReady
         this.current_location = new LatLng(location.getLatitude(), location.getLongitude());
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-        final TextView user_name = (TextView) navigationView.getHeaderView(0).findViewById(R.id.user_name);
-        final TextView user_email = (TextView) navigationView.getHeaderView(0).findViewById(R.id.user_email);
+        final TextView user_name = navigationView.getHeaderView(0).findViewById(R.id.user_name);
+        final TextView user_email = navigationView.getHeaderView(0).findViewById(R.id.user_email);
 
         this.search_text = (EditText) findViewById(R.id.searchText);
         ImageButton search_button = (ImageButton) findViewById(R.id.searchButton);
@@ -163,7 +165,7 @@ public class MapFragmentActivity extends AppCompatActivity implements OnMapReady
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
         switch (menuItem.getItemId()) {
             case R.id.nav_profile:
-                startActivity(new Intent(this, UserProfileFragmentActivity.class));
+                startActivity(new Intent(MapFragmentActivity.this, UserProfileFragmentActivity.class));
                 break;
             case R.id.nav_map:
                 break;
@@ -267,9 +269,9 @@ public class MapFragmentActivity extends AppCompatActivity implements OnMapReady
                 }
             case R.id.photolist_button:
                 Intent intent = new Intent(MapFragmentActivity.this, PhotoListActivity.class);
-
-                intent.putExtra("Latitude",dest_place.latitude);
-                intent.putExtra("Longtitude",dest_place.longitude);
+                intent.putExtra("place_id",target_place_id);
+                intent.putExtra("latitude",Double.toString(dest_place.latitude));
+                intent.putExtra("longitude",Double.toString(dest_place.longitude));
                 startActivity(intent);
             case R.id.route_button:
                 RouteHttpTask task = new RouteHttpTask();
@@ -332,11 +334,13 @@ public class MapFragmentActivity extends AppCompatActivity implements OnMapReady
                 for (int i = 0; i < this.placeList.length(); i++) {
                     try {
                         final JSONObject place = this.placeList.getJSONObject(i);
+                        Log.d("MapFragmentActivity: ", String.valueOf(place));
                         Marker marker = new Marker();
                         marker.setPosition(new LatLng(place.getDouble("latitude"), place.getDouble("longitude")));
                         marker.setOnClickListener(o -> {
                             try {
                                 dest_place = new LatLng(place.getDouble("latitude"), place.getDouble("longitude"));
+                                target_place_id = place.getString("place_id");
                                 routeButton.setVisibility(View.VISIBLE);
                                 photoListButton.setVisibility(View.VISIBLE);
                                 shortButton.setVisibility(View.VISIBLE);

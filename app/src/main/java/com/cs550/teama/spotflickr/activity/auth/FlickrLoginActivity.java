@@ -10,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
@@ -22,7 +23,7 @@ import com.cs550.teama.spotflickr.services.Utils;
 import java.util.Map;
 
 public class FlickrLoginActivity extends AppCompatActivity implements LoginObserver {
-    private final static String TAG = "FlickrLoginActivity";
+    final static String TAG = "FlickrLoginActivity";
     WebView webView;
     ProgressBar progressBar_cyclic;
     SwipeRefreshLayout swipe;
@@ -34,17 +35,14 @@ public class FlickrLoginActivity extends AppCompatActivity implements LoginObser
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_flickr_oauth);
 
+
         toolbar = findViewById(R.id.toolbar);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onLoginFail();
-            }
-        });
+        toolbar.setNavigationOnClickListener(view -> onLoginFail());
 
         webView = findViewById(R.id.webView);
         progressBar_cyclic = findViewById(R.id.progressBar_cyclic);
         progressBar_cyclic.setVisibility(View.GONE);
+
         swipe = findViewById(R.id.swipe);
         swipe.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -53,19 +51,23 @@ public class FlickrLoginActivity extends AppCompatActivity implements LoginObser
                     WebAction(oauth.getAuthorizationURL());
             }
         });
+
         oauth = new OAuthService(this);
     }
 
+
     @SuppressLint("SetJavaScriptEnabled")
-    public void WebAction(final String loginUrl){
-        webView.getSettings().setJavaScriptEnabled(true);
-        webView.getSettings().setAppCacheEnabled(true);
+    public void WebAction(String loginUrl){
+        WebSettings settings = webView.getSettings();
+        settings.setJavaScriptEnabled(true);
+        settings.setAppCacheEnabled(true);
+        settings.setDomStorageEnabled(true);
+
         webView.loadUrl(loginUrl);
         swipe.setRefreshing(true);
         webView.setWebViewClient(new WebViewClient(){
 
             public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
-
                 webView.loadUrl("file:///android_assets/error.html");
             }
 
@@ -90,7 +92,6 @@ public class FlickrLoginActivity extends AppCompatActivity implements LoginObser
                 if (queries != null && queries.containsKey("oauth_verifier")){
                     // The request token is approved
                     // Now get the Access Token with the verifier
-                    System.out.println("------ APPROVED Request token --------");
                     oauth.getAccessToken(queries.get("oauth_verifier"));
                     // hide the webView and show a circle
                     webView.setVisibility(View.GONE);
@@ -99,10 +100,13 @@ public class FlickrLoginActivity extends AppCompatActivity implements LoginObser
             }
 
         });
+
     }
+
 
     @Override
     public void onBackPressed(){
+
         if (webView.canGoBack()){
             webView.goBack();
         } else {
@@ -110,10 +114,12 @@ public class FlickrLoginActivity extends AppCompatActivity implements LoginObser
         }
     }
 
+
     @Override
     public void onRequestTokenReceived(OAuthService oauth) {
         String url = oauth.getAuthorizationURL();
         WebAction(url);
+
     }
 
     @Override

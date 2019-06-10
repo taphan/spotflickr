@@ -1,9 +1,18 @@
 package com.cs550.teama.spotflickr.services;
 
+import android.support.annotation.NonNull;
 import android.util.Base64;
+import android.widget.Toast;
 
 import com.cs550.teama.spotflickr.App;
 import com.cs550.teama.spotflickr.R;
+import com.cs550.teama.spotflickr.model.User;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -21,10 +30,12 @@ public class FlickrApiUrlService {
     private final static String SIGNATURE_KEY = App.getContext().getString(R.string.flickr_api_secret);
     private final static String BASE_URL = "https://api.flickr.com/services/rest/";
     private Map<String, String> params;
-    private OAuthService oAuthService;
+    private String oauth_token;
+    private String oauth_token_secret;
 
-    public FlickrApiUrlService(OAuthService oAuthService) {
-        this.oAuthService = oAuthService;
+    public FlickrApiUrlService(OAuthService oAuthService, String oauth_token, String oauth_token_secret) {
+        this.oauth_token = oauth_token;
+        this.oauth_token_secret = oauth_token_secret;
         this.params = new HashMap<>();
         this.addMustHaveParams();
     }
@@ -75,7 +86,11 @@ public class FlickrApiUrlService {
         params.put("nojsoncallback", "1");
         params.put("format", "json");
         params.put("api_key", API_KEY);
-        params.put("oauth_token", oAuthService.getAccessTokenResponse().get("oauth_token")); // Get from other class (OAuthService)
+        // TODO: Retrieve oauth_token and oauth_token_secret fields from users document
+
+//        oauth_token = "72157708739531846-c40bd7aa65190570";
+        params.put("oauth_token", oauth_token);
+        //params.put("oauth_token", "72157708739531846-c40bd7aa65190570");
     }
 
     public void addParam(String key, String value) {
@@ -83,8 +98,11 @@ public class FlickrApiUrlService {
     }
 
     public String getRequestUrl() {
+//        String signature = getSignature(params, SIGNATURE_KEY + "&" +
+//                oAuthService.getAccessTokenResponse().get("oauth_token_secret"), BASE_URL);
+//        oauth_token_secret = "08820c8592172f23";
         String signature = getSignature(params, SIGNATURE_KEY + "&" +
-                oAuthService.getAccessTokenResponse().get("oauth_token_secret"), BASE_URL);
+                oauth_token_secret, BASE_URL);
         addParam("oauth_signature", Utils.oauthEncode(signature));
         return BASE_URL + "?" + getQueryTextByParams(params);
     }

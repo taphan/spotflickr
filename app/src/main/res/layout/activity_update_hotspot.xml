@@ -27,22 +27,41 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:layout_marginBottom="7dp"
-                android:text="Update Hotspot List"
+                android:text="Update Hotspot"
                 android:textAlignment="center"
                 android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
                 android:textSize="20dp"
                 android:textColor="@color/colorPrimaryDark" />
 
-            <EditText
-                android:id="@+id/edittext_name_update"
+            <TextView
+                android:id="@+id/textview_content"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="5dp"
-                android:layout_marginTop="5dp"
-                android:background="@drawable/edittext_background"
-                android:hint="New Hotspot List Name"
-                android:padding="10dp"
-                android:textSize="15dp"/>
+                android:text="Hotspot Name"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
+                android:textSize="20dp"
+                android:textColor="@color/colorPrimaryDark" />
+
+            <TextView
+                android:id="@+id/textview_latitude"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:text="Latitude"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
+                android:textSize="16dp"
+                android:textColor="@color/colorPrimaryDark" />
+
+            <TextView
+                android:id="@+id/textview_longitude"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:text="Longitude"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
+                android:textSize="16dp"
+                android:textColor="@color/colorPrimaryDark" />
 
             <EditText
                 android:id="@+id/edittext_desc_update"
@@ -63,7 +82,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="7dp"
                 android:background="@drawable/button_background"
-                android:text="Update Hotspot List"
+                android:text="Update Hotspot"
                 android:textAllCaps="false"
                 android:textColor="@color/colorAccent" />
 
@@ -73,7 +92,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="7dp"
                 android:background="#cf0b0b"
-                android:text="Delete Hotspot List"
+                android:text="Delete Hotspot"
                 android:textAllCaps="false"
                 android:textColor="@color/colorAccent" />
 
