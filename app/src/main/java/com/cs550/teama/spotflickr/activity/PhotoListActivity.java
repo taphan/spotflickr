@@ -121,6 +121,7 @@ public class PhotoListActivity extends AppCompatActivity implements View.OnClick
         List<String> urls = new ArrayList<>();
         for (int i = 0; i < photoArrayList.size(); i++) {
             Photo photo = photoArrayList.get(i);
+            Log.d(TAG, photo.getId());
             urls.add(buildPhotoUrl(
                     String.valueOf(photo.getFarm()),
                     photo.getServer(),
