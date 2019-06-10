@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
+import android.media.Image;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -18,6 +19,10 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -52,7 +57,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 
-public class MapFragmentActivity extends AppCompatActivity implements OnMapReadyCallback, NavigationView.OnNavigationItemSelectedListener {
+public class MapFragmentActivity extends AppCompatActivity implements OnMapReadyCallback, NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1000;
     private FusedLocationSource locationSource;
     private LocationManager lm;
@@ -63,7 +68,9 @@ public class MapFragmentActivity extends AppCompatActivity implements OnMapReady
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
     DocumentReference documentReference = db.collection("users").document(mAuth.getCurrentUser().getUid());
     private User current_user;
-
+    private LatLng current_location;
+    private EditText search_text;
+    private MapFragment mapFragment;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -81,10 +88,31 @@ public class MapFragmentActivity extends AppCompatActivity implements OnMapReady
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+
+        lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        this.current_location = new LatLng(location.getLatitude(), location.getLongitude());
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         final TextView user_name = (TextView) navigationView.getHeaderView(0).findViewById(R.id.user_name);
         final TextView user_email = (TextView) navigationView.getHeaderView(0).findViewById(R.id.user_email);
+
+        this.search_text = (EditText) findViewById(R.id.searchText);
+        ImageButton search_button = (ImageButton) findViewById(R.id.searchButton);
+        search_button.setOnClickListener(this);
+        mapFragment = (MapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+
+
 
         documentReference.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
@@ -99,23 +127,12 @@ public class MapFragmentActivity extends AppCompatActivity implements OnMapReady
         });
 
 
-        MapFragment mapFragment = (MapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         if (mapFragment == null) {
             mapFragment = MapFragment.newInstance();
             getSupportFragmentManager().beginTransaction().add(R.id.map, mapFragment).commit();
         }
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
-        }
-        lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+
+
 
         mapFragment.getMapAsync(this);
 
@@ -175,11 +192,10 @@ public class MapFragmentActivity extends AppCompatActivity implements OnMapReady
             return;
         }
         lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        LatLng current_location = new LatLng(location.getLatitude(), location.getLongitude());
-        CameraUpdate cameraUpdate = CameraUpdate.scrollTo(current_location);
+//        Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        CameraUpdate cameraUpdate = CameraUpdate.scrollTo(this.current_location);
         naverMap.moveCamera(cameraUpdate);
-        locationOverlay.setPosition(current_location);
+        locationOverlay.setPosition(this.current_location);
 
         UiSettings uiSettings = naverMap.getUiSettings();
         uiSettings.setLocationButtonEnabled(true);
@@ -187,6 +203,39 @@ public class MapFragmentActivity extends AppCompatActivity implements OnMapReady
 
     }
 
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.searchButton:
+                String search_location = search_text.getText().toString();
+                System.out.println(search_location);
+                if (search_location == ""){
+
+                } else {
+                    LatLng target_location = this.current_location;
+                    String url = "https://naveropenapi.apigw.ntruss.com/map-place/v1/search?query=" + search_location + "&coordinate=" + this.current_location.longitude + "," + this.current_location.latitude;
+                    try{
+                        Request search_request = new Request.Builder()
+                            .addHeader("X-NCP-APIGW-API-KEY-ID", "vh8iieoys0")
+                            .addHeader("X-NCP-APIGW-API-KEY", "4hc45eBq62ftAUkFh14bTiCahtfgxiMLGY7XgExk")
+                            .url(url).build();
+                        Response response = client.newCall(search_request).execute();
+                        String body = response.body().string();
+                        JSONObject jsonResponse = new JSONObject(body);
+                        JSONArray places = jsonResponse.getJSONArray("places");
+                        JSONObject current_place = places.getJSONObject(0);
+                        this.current_location = new LatLng(Double.parseDouble(current_place.getString("x")),Double.parseDouble(current_place.getString("y")));
+                        mapFragment.getMapAsync(this);
+
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+        }
+    }
 
     private class FlickerHttpTask extends AsyncTask<LatLng, Void, Void> implements OnMapReadyCallback {
         JSONArray placeList;
@@ -199,7 +248,7 @@ public class MapFragmentActivity extends AppCompatActivity implements OnMapReady
             double minLng = CurrentLocation.longitude - 0.01;
             double maxLng = CurrentLocation.longitude + 0.01;
 
-            MapFragment mapFragment = (MapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+//            MapFragment mapFragment = (MapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
 
             //it return with format as json.
             try {
@@ -225,7 +274,7 @@ public class MapFragmentActivity extends AppCompatActivity implements OnMapReady
 
         @Override
         protected void onPostExecute(Void result) {
-            MapFragment mapFragment = (MapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+//            MapFragment mapFragment = (MapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
             mapFragment.getMapAsync(this);
 
         }
