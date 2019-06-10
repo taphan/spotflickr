@@ -8,4 +8,6 @@
     <string name="sign_up">Sign Up</string>
     <string name="signup_check">Already have an account? <u>Login</u></string>
     <string name="signup">Don\'t have account? <u>Sign Up</u></string>
+    <string name="title_activity_save_hotspot">SaveHotspotActivity</string>
+    <string name="title_activity_update_hotspot">UpdateHotspotActivity</string>
 </resources>

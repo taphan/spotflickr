@@ -17,10 +17,11 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.cs550.teama.spotflickr.R;
 import com.cs550.teama.spotflickr.activity.MapFragmentActivity;
 import com.cs550.teama.spotflickr.activity.user.UserProfileFragmentActivity;
-import com.cs550.teama.spotflickr.adapter.HotspotListAdapter;
-import com.cs550.teama.spotflickr.R;
+import com.cs550.teama.spotflickr.adapter.HotspotAdapter;
+import com.cs550.teama.spotflickr.model.Hotspot;
 import com.cs550.teama.spotflickr.model.HotspotList;
 import com.cs550.teama.spotflickr.model.User;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -33,13 +34,15 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HotspotListActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class HotspotActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private DrawerLayout drawer;
     private RecyclerView recyclerView;
-    private HotspotListAdapter adapter;
-    private List<HotspotList> hotspotListList;
+    private HotspotAdapter adapter;
+    private List<Hotspot> hotspotList;
     private ProgressBar progressBar;
+
+    private HotspotList hotspotListList;
 
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
@@ -49,21 +52,23 @@ public class HotspotListActivity extends AppCompatActivity implements Navigation
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_hotspot_list);
+        setContentView(R.layout.activity_hotspot);
+
+        hotspotListList = (HotspotList) getIntent().getSerializableExtra("hotspotList");
 
         progressBar = findViewById(R.id.progressbar);
 
-        recyclerView = findViewById(R.id.recyclerview_hotspot_lists);
+        recyclerView = findViewById(R.id.recyclerview_hotspots);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        hotspotListList = new ArrayList<>();
-        adapter = new HotspotListAdapter(this, hotspotListList);
+        hotspotList = new ArrayList<>();
+        adapter = new HotspotAdapter(this, hotspotList);
 
         recyclerView.setAdapter(adapter);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
-        toolbar.setTitle("Hotspot Lists");
+        toolbar.setTitle("Hotspots");
         setSupportActionBar(toolbar);
 
         drawer = findViewById(R.id.drawer_layout);
@@ -91,7 +96,7 @@ public class HotspotListActivity extends AppCompatActivity implements Navigation
             }
         });
 
-        db.collection("hotspot lists").whereEqualTo("user_id", mAuth.getCurrentUser().getUid()).get()
+        db.collection("hotspots").whereEqualTo("list_id", hotspotListList.getListId()).get()
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
                     public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
@@ -99,11 +104,10 @@ public class HotspotListActivity extends AppCompatActivity implements Navigation
                         if (!queryDocumentSnapshots.isEmpty()) {
                             List<DocumentSnapshot> list = queryDocumentSnapshots.getDocuments();
 
-
                             for (DocumentSnapshot d : list) {
-                                HotspotList hList = d.toObject(HotspotList.class);
-                                hList.setListId(d.getId());
-                                hotspotListList.add(hList);
+                                Hotspot h = d.toObject(Hotspot.class);
+                                h.setId(d.getId());
+                                hotspotList.add(h);
                             }
                             adapter.notifyDataSetChanged();
                         }

@@ -26,7 +26,7 @@ public class User {
         this.oauth_token_secret = oauth_token_secret;
         this.email = email;
         this.password = password;
-        this.hotspot_id_list = hotspot_id_list;
+        this.hotspot_id_list = hotspot_list;
     }
 
     public String getFullname() {
@@ -53,6 +53,7 @@ public class User {
     public void updatePassword(String password) {
         this.password = password;
     }
+    public void deleteHotspotList(String listID) {hotspot_id_list.remove(listID);}
     public void addHotspotList(String listID) {
         hotspot_id_list.add(listID);
     }

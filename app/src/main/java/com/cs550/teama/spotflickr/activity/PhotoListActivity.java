@@ -1,22 +1,31 @@
 package com.cs550.teama.spotflickr.activity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.View;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import com.cs550.teama.spotflickr.R;
+import com.cs550.teama.spotflickr.activity.hotspot.SaveHotspotActivity;
 import com.cs550.teama.spotflickr.adapter.ImageListAdapter;
 import com.cs550.teama.spotflickr.adapter.PhotoAdapter;
 import com.cs550.teama.spotflickr.interfaces.ApiService;
 import com.cs550.teama.spotflickr.model.Photo;
 import com.cs550.teama.spotflickr.model.Photos;
+import com.cs550.teama.spotflickr.model.User;
 import com.cs550.teama.spotflickr.network.RetrofitInstance;
 import com.cs550.teama.spotflickr.services.FlickrApiUrlService;
 import com.cs550.teama.spotflickr.services.OAuthService;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,17 +34,26 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class PhotoListActivity extends AppCompatActivity {
+public class PhotoListActivity extends AppCompatActivity implements View.OnClickListener {
     private static final String TAG = "PhotoListActivity";
     private static final String API_KEY = "c78af6829b82ef76418e7563ee33fe85";
     private Context context;
     private String place_id;
     private String lat;
     private String lon;
+    private String content;
 
     private PhotoAdapter adapter;
     private RecyclerView recyclerView;
     private ListView listView;
+
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    private DocumentReference userDocRef = db.collection("users").document(mAuth.getCurrentUser().getUid());
+
+    private User current_user;
+    private String oauth_token;
+    private String oauth_token_secret;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,12 +63,26 @@ public class PhotoListActivity extends AppCompatActivity {
 
         /* Get place_id, latitude and longitude coordinates from map*/
         Bundle extras = getIntent().getExtras();
+
+        content = extras.getString("content");
         place_id = extras.getString("place_id");
         lat = extras.getString("latitude");
         lon = extras.getString("longitude");
 
+        userDocRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                if (documentSnapshot.exists()) {
+                    current_user = documentSnapshot.toObject(User.class);
+                    oauth_token = current_user.getOauth_token();
+                    oauth_token_secret = current_user.getOauth_token_secret();
+                    sendRequest();
+                }
+            }
+        });
+
+        findViewById(R.id.adding_hotspot).setOnClickListener(this);
         /* Send request to get photos at this location*/
-        sendRequest();
     }
 
     private void sendRequest() {
@@ -74,7 +106,7 @@ public class PhotoListActivity extends AppCompatActivity {
     }
 
     private FlickrApiUrlService prepareUrlService() {
-        FlickrApiUrlService urlService = new FlickrApiUrlService(OAuthService.INSTANCE);
+        FlickrApiUrlService urlService = new FlickrApiUrlService(OAuthService.INSTANCE, oauth_token, oauth_token_secret);
 //        urlService.addParam("method", "flickr.photos.geo.photosForLocation");
         urlService.addParam("method", "flickr.photos.search");
         urlService.addParam("place_id", place_id);
@@ -114,5 +146,19 @@ public class PhotoListActivity extends AppCompatActivity {
         sb.append(secret);
         sb.append(".jpg");
         return sb.toString();
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.adding_hotspot:
+                Intent intent = new Intent(this, SaveHotspotActivity.class);
+                intent.putExtra("content", content);
+                intent.putExtra("place_id", place_id);
+                intent.putExtra("latitude", lat);
+                intent.putExtra("longitude", lon);
+                startActivity(intent);
+                break;
+        }
     }
 }
