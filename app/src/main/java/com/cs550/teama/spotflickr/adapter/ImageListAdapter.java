@@ -32,13 +32,13 @@ public class ImageListAdapter extends ArrayAdapter {
         if (null == convertView) {
             convertView = inflater.inflate(R.layout.listview_item_image, parent, false);
         }
-
         Picasso
                 .with(context)
                 .load(imageUrls.get(position))
-                .fit() // will explain later
+                .resize(parent.getWidth(), 0)
                 .into((ImageView) convertView);
 
         return convertView;
     }
+
 }

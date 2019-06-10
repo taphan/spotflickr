@@ -2,14 +2,11 @@ package com.cs550.teama.spotflickr.activity.auth;
 
 import android.Manifest;
 import android.app.Activity;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -24,7 +21,6 @@ import android.widget.Toast;
 
 import com.cs550.teama.spotflickr.R;
 import com.cs550.teama.spotflickr.activity.MapFragmentActivity;
-import com.cs550.teama.spotflickr.activity.PhotoListActivity;
 import com.cs550.teama.spotflickr.services.OAuthService;
 import com.cs550.teama.spotflickr.services.Utils;
 import com.google.firebase.auth.FirebaseAuth;
@@ -151,6 +147,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 startActivity(intent);
 
             } else if (resultCode == Activity.RESULT_CANCELED) {
+                this.setTheme(R.style.AlertDialogCustom);
                 new AlertDialog.Builder(this)
                         .setTitle("Login Status")
                         .setMessage("Failed to login")

@@ -25,7 +25,7 @@
     <ListView
         android:id="@+id/list"
         android:layout_width="fill_parent"
-        android:layout_height="666dp"
+        android:layout_height="wrap_content"
         android:dividerHeight="1dp" />
 
     <ImageView
