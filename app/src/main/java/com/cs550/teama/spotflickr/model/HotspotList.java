@@ -48,6 +48,8 @@ public class HotspotList implements Serializable {
         hotspot_id.add(ID);
     }
     public int getHotspotIdSize() {
+        if (hotspot_id == null)
+            hotspot_id = new ArrayList<String>();
         return hotspot_id.size();
     }
 }

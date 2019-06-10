@@ -31,7 +31,14 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QuerySnapshot;
+
+import java.util.List;
+
+import javax.annotation.Nullable;
 
 public class DeleteAccountActivity extends AppCompatActivity implements View.OnClickListener, NavigationView.OnNavigationItemSelectedListener {
 
@@ -100,10 +107,17 @@ public class DeleteAccountActivity extends AppCompatActivity implements View.OnC
                                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                                     @Override
                                     public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                        HotspotList hList = documentSnapshot.toObject(HotspotList.class);
-                                        for (int i = 0; i < hList.getHotspotIdSize(); i++) {
-                                            db.collection("hotspots").document(hList.getHotspot_id().get(i)).delete();
-                                        }
+                                        db.collection("hotspots").whereEqualTo("list_id", documentSnapshot.getId())
+                                            .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                                                @Override
+                                                public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                                                    List<DocumentSnapshot> documentSnapshots = queryDocumentSnapshots.getDocuments();
+
+                                                    for (DocumentSnapshot d : documentSnapshots) {
+                                                        db.collection("hotspots").document(d.getId()).delete();
+                                                    }
+                                                }
+                                            });
                                     }
                                 });
 
