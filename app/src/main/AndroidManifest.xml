@@ -13,7 +13,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activity.hotspot.CreateHotspotListActivity"></activity>
+        <activity android:name=".activity.auth.DeleteAccountActivity"></activity>
+        <activity android:name=".activity.auth.CurrentUserPasswordActivity" />
+        <activity android:name=".activity.hotspot.CreateHotspotListActivity" />
         <activity
             android:name=".activity.hotspot.UpdateHotspotActivity"
             android:label="@string/title_activity_update_hotspot"

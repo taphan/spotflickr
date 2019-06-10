@@ -19,6 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cs550.teama.spotflickr.activity.MapFragmentActivity;
+import com.cs550.teama.spotflickr.activity.auth.CurrentUserPasswordActivity;
 import com.cs550.teama.spotflickr.activity.auth.LoginActivity;
 import com.cs550.teama.spotflickr.activity.auth.ChangePasswordActivity;
 import com.cs550.teama.spotflickr.activity.hotspot.HotspotListActivity;
@@ -198,7 +199,7 @@ public class UserProfileFragmentActivity extends AppCompatActivity implements Vi
     public void onClick(View view) {
         switch(view.getId()) {
             case R.id.change_password:
-                startActivity(new Intent(this, ChangePasswordActivity.class));
+                startActivity(new Intent(this, CurrentUserPasswordActivity.class));
                 break;
 
             case R.id.delete_account:
