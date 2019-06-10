@@ -31,7 +31,7 @@
             android:value="vh8iieoys0" />
 
         <activity
-            android:name=".activity.auth.LoginActivity"
+            android:name=".activity.RecentPhotoListActivity"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

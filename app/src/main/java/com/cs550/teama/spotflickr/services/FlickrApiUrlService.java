@@ -1,18 +1,9 @@
 package com.cs550.teama.spotflickr.services;
 
-import android.support.annotation.NonNull;
 import android.util.Base64;
-import android.widget.Toast;
 
 import com.cs550.teama.spotflickr.App;
 import com.cs550.teama.spotflickr.R;
-import com.cs550.teama.spotflickr.model.User;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -97,6 +88,9 @@ public class FlickrApiUrlService {
         params.put(key, value);
     }
 
+    public Map<String, String> getParams() {
+        return this.params;
+    }
     public String getRequestUrl() {
 //        String signature = getSignature(params, SIGNATURE_KEY + "&" +
 //                oAuthService.getAccessTokenResponse().get("oauth_token_secret"), BASE_URL);
