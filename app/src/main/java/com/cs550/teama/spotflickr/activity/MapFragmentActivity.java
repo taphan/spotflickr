@@ -43,13 +43,17 @@ import com.naver.maps.map.UiSettings;
 import com.naver.maps.map.overlay.InfoWindow;
 import com.naver.maps.map.overlay.LocationOverlay;
 import com.naver.maps.map.overlay.Marker;
+import com.naver.maps.map.overlay.OverlayImage;
+import com.naver.maps.map.overlay.PathOverlay;
 import com.naver.maps.map.util.FusedLocationSource;
+import com.naver.maps.map.util.MarkerIcons;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
@@ -71,6 +75,11 @@ public class MapFragmentActivity extends AppCompatActivity implements OnMapReady
     private LatLng current_location;
     private EditText search_text;
     private MapFragment mapFragment;
+    private LatLng[] route;
+    private LatLng dest_place;
+    private ImageButton routeButton;
+    private ImageButton photoListButton;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -98,6 +107,10 @@ public class MapFragmentActivity extends AppCompatActivity implements OnMapReady
             // for ActivityCompat#requestPermissions for more details.
             return;
         }
+        routeButton = findViewById(R.id.route_button);
+        photoListButton = findViewById(R.id.photolist_button);
+        photoListButton.setOnClickListener(this);
+        routeButton.setOnClickListener(this);
 
         lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
@@ -233,7 +246,15 @@ public class MapFragmentActivity extends AppCompatActivity implements OnMapReady
                         e.printStackTrace();
                     }
                 }
+            case R.id.photolist_button:
+                Intent intent = new Intent(MapFragmentActivity.this, PhotoListActivity.class);
 
+                intent.putExtra("Latitude",dest_place.latitude);
+                intent.putExtra("Longtitude",dest_place.longitude);
+                startActivity(intent);
+            case R.id.route_button:
+                RouteHttpTask task = new RouteHttpTask();
+                task.execute(current_location);
         }
     }
 
@@ -292,20 +313,17 @@ public class MapFragmentActivity extends AppCompatActivity implements OnMapReady
                         Marker marker = new Marker();
                         marker.setPosition(new LatLng(place.getDouble("latitude"), place.getDouble("longitude")));
                         marker.setOnClickListener(o -> {
-                            Intent intent = new Intent(MapFragmentActivity.this, PhotoListActivity.class);
                             try {
-                                intent.putExtra("content", place.getString("_content"));
-                                intent.putExtra("latitude", Double.toString(place.getDouble("latitude")));
-                                intent.putExtra("longitude", Double.toString(place.getDouble("longitude")));
-                                startActivity(intent);
+                                dest_place = new LatLng(place.getDouble("latitude"), place.getDouble("longitude"));
+                                routeButton.setVisibility(View.VISIBLE);
+//                                photoListButton.setVisibility(View.VISIBLE);
+                                return true;
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
-
                             return true;
                         });
                         marker.setMap(naverMap);
-
                         InfoWindow infoWindow = new InfoWindow();
                         infoWindow.setAdapter(new InfoWindow.DefaultTextAdapter(getApplicationContext()) {
                             @NonNull
@@ -328,6 +346,87 @@ public class MapFragmentActivity extends AppCompatActivity implements OnMapReady
                 }
             } catch (NullPointerException e) {
                 e.printStackTrace();
+            }
+        }
+    }
+
+    private class RouteHttpTask extends AsyncTask<LatLng, Void, Void> implements OnMapReadyCallback {
+        JSONArray transit_list;
+        @Override
+        protected Void doInBackground(LatLng... params){
+            String target_url = "https://maps.googleapis.com/maps/api/directions/json?origin="+Double.toString(current_location.latitude)+","+Double.toString(current_location.longitude)+"&destination="+Double.toString(dest_place.latitude)+","+Double.toString(dest_place.longitude)+"&mode=transit&key=AIzaSyCmRam6VFK0HHYlxKPK5Rd9cskR-Q8j2m0";
+            Request request = new Request.Builder()
+                    .url(target_url)
+                    .build();
+            Response response = null;
+            try {
+                response = client.newCall(request).execute();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            String body = null;
+            try {
+                body = response.body().string();
+                JSONArray routes = null;
+                routes = new JSONObject(body).getJSONArray("routes");
+                JSONArray steps = routes.getJSONObject(0).getJSONArray("legs").getJSONObject(0).getJSONArray("steps");
+                transit_list = new JSONArray();
+                for (int i=0;i< steps.length(); i++){
+                    JSONObject step = steps.getJSONObject(i);
+                    transit_list.put(step);
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return null;
+
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            mapFragment.getMapAsync(this);
+
+        }
+
+        @Override
+        @UiThread
+        public void onMapReady(@NonNull NaverMap naverMap){
+            for (int i=0; i<transit_list.length();i++){
+                try {
+                    JSONObject step =transit_list.getJSONObject(i);
+                    Marker marker = new Marker();
+                    JSONObject target_location = step.getJSONObject("start_location");
+                    JSONObject end_location = step.getJSONObject("end_location");
+
+                    marker.setPosition(new LatLng(target_location.getDouble("lat"),target_location.getDouble("lng")));
+                    marker.setIcon(MarkerIcons.YELLOW);
+                    marker.setMap(naverMap);
+                    InfoWindow infoWindow = new InfoWindow();
+                    infoWindow.setAdapter(new InfoWindow.DefaultTextAdapter(getApplicationContext()) {
+                        @NonNull
+                        @Override
+                        public CharSequence getText(@NonNull InfoWindow infoWindow) {
+                            try {
+                                return step.getString("html_instructions");
+
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            return null;
+                        }
+                    });
+                    infoWindow.open(marker);
+                    PathOverlay path = new PathOverlay();
+                    path.setCoords(Arrays.asList(
+                            new LatLng(target_location.getDouble("lat"),target_location.getDouble("lng")),
+                            new LatLng(end_location.getDouble("lat"),end_location.getDouble("lng"))
+                    ));
+                    path.setMap(naverMap);
+                } catch (JSONException e) {;
+                    e.printStackTrace();
+                }
             }
         }
     }

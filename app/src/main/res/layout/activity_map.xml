@@ -15,20 +15,24 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+
+
     </FrameLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
+
         <android.support.v7.widget.Toolbar
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
             android:id="@+id/toolbar"
-            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+            android:layout_width="75dp"
+            android:layout_height="?attr/actionBarSize"
             android:elevation="4dp"
-            />
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+
+
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -38,14 +42,42 @@
             <EditText
                 android:id="@+id/searchText"
                 android:layout_width="364dp"
-                android:layout_height="57dp"
-                />
+                android:layout_height="57dp" />
 
             <ImageButton
                 android:id="@+id/searchButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:srcCompat="@android:drawable/ic_search_category_default" />
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/photolist_button"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:visibility="invisible"
+                app:srcCompat="@drawable/rounded_button_transparent"
+                />
+            <Button
+                android:id="@+id/route_button"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:visibility="invisible"
+                android:text ="transit" />
+
+
+            <Button
+                android:id="@+id/short_route_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="short"
+
+                />
 
         </LinearLayout>
 
@@ -59,6 +91,9 @@
         app:headerLayout="@layout/nav_header"
         app:menu="@menu/drawer_menu">
 
+
     </android.support.design.widget.NavigationView>
+
+
 
 </android.support.v4.widget.DrawerLayout>
