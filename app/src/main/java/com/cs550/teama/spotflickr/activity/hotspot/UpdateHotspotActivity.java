@@ -20,8 +20,8 @@ import android.widget.Toast;
 import com.cs550.teama.spotflickr.R;
 import com.cs550.teama.spotflickr.activity.MapFragmentActivity;
 import com.cs550.teama.spotflickr.activity.user.UserProfileFragmentActivity;
-import com.cs550.teama.spotflickr.model.Hotspot;
-import com.cs550.teama.spotflickr.model.HotspotList;
+import com.cs550.teama.spotflickr.model.hotspot.Hotspot;
+import com.cs550.teama.spotflickr.model.hotspot.HotspotList;
 import com.cs550.teama.spotflickr.model.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -31,8 +31,6 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-
-import java.util.List;
 
 public class UpdateHotspotActivity extends AppCompatActivity implements View.OnClickListener, NavigationView.OnNavigationItemSelectedListener {
 
@@ -54,13 +52,13 @@ public class UpdateHotspotActivity extends AppCompatActivity implements View.OnC
 
         hotspot = (Hotspot) getIntent().getSerializableExtra("hotspot");
 
-        TextView textView_content = (TextView) findViewById(R.id.textview_content);
-        TextView textView_latitude = (TextView) findViewById(R.id.textview_latitude);
-        TextView textView_longitude = (TextView) findViewById(R.id.textview_longitude);
+        TextView textView_content = findViewById(R.id.textview_content);
+        TextView textView_latitude = findViewById(R.id.textview_latitude);
+        TextView textView_longitude = findViewById(R.id.textview_longitude);
 
         textView_content.setText(hotspot.getName());
-        textView_latitude.setText("Latitude: "+ Float.toString(hotspot.getLatitude()));
-        textView_longitude.setText("Longitude: "+ Float.toString(hotspot.getLongitude()));
+        textView_latitude.setText("Latitude: "+ hotspot.getLatitude());
+        textView_longitude.setText("Longitude: "+ hotspot.getLongitude());
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle("Hotspot Manager");
@@ -75,8 +73,8 @@ public class UpdateHotspotActivity extends AppCompatActivity implements View.OnC
 
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-        final TextView user_name = (TextView) navigationView.getHeaderView(0).findViewById(R.id.user_name);
-        final TextView user_email = (TextView) navigationView.getHeaderView(0).findViewById(R.id.user_email);
+        final TextView user_name = navigationView.getHeaderView(0).findViewById(R.id.user_name);
+        final TextView user_email = navigationView.getHeaderView(0).findViewById(R.id.user_email);
 
 
         userDocRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {

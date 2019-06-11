@@ -13,7 +13,7 @@ import android.widget.TextView;
 import com.cs550.teama.spotflickr.R;
 import com.cs550.teama.spotflickr.activity.hotspot.HotspotActivity;
 import com.cs550.teama.spotflickr.activity.hotspot.UpdateHotspotListActivity;
-import com.cs550.teama.spotflickr.model.HotspotList;
+import com.cs550.teama.spotflickr.model.hotspot.HotspotList;
 
 import java.util.List;
 
