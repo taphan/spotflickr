@@ -1,18 +1,29 @@
 package com.cs550.teama.spotflickr.activity.hotspot;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cs550.teama.spotflickr.R;
-import com.cs550.teama.spotflickr.model.hotspot.HotspotList;
+import com.cs550.teama.spotflickr.activity.PhotoListActivity;
+import com.cs550.teama.spotflickr.activity.auth.ChangePasswordActivity;
+import com.cs550.teama.spotflickr.activity.auth.LoginActivity;
+import com.cs550.teama.spotflickr.activity.user.UserProfileFragmentActivity;
+import com.cs550.teama.spotflickr.model.HotspotList;
 import com.cs550.teama.spotflickr.model.User;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;

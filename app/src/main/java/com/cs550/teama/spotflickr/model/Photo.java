@@ -1,4 +1,4 @@
-package com.cs550.teama.spotflickr.model.photo;
+package com.cs550.teama.spotflickr.model;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;

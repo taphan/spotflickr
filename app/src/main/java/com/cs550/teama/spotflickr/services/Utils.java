@@ -10,7 +10,6 @@ import java.util.Map;
 
 public class Utils {
     public static Map<String, String> getUrlParameters(String url){
-        Map<String, String> result = new HashMap<>();
         URL realUrl = null;
         try {
             realUrl = new URL(url);
@@ -18,10 +17,10 @@ public class Utils {
             e.printStackTrace();
         }
         if (realUrl != null && realUrl.getQuery() != null){
-            result = separateParameters(realUrl.getQuery());
+            return separateParameters(realUrl.getQuery());
         }
         // return nothing when the URL is not really a URL
-        return result;
+        return null;
     }
 
     public static Map<String, String> separateParameters(String params){
@@ -30,8 +29,7 @@ public class Utils {
         for (int i=0; i < resArray.length; i++) {
             String currentResponse = resArray[i];
             String[] keyValue = currentResponse.split("=");
-            if (keyValue.length == 2)
-                map.put(keyValue[0], keyValue[1]);
+            map.put(keyValue[0], keyValue[1]);
         }
         return map;
     }

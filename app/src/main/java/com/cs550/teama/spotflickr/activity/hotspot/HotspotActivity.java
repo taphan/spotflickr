@@ -21,8 +21,8 @@ import com.cs550.teama.spotflickr.R;
 import com.cs550.teama.spotflickr.activity.MapFragmentActivity;
 import com.cs550.teama.spotflickr.activity.user.UserProfileFragmentActivity;
 import com.cs550.teama.spotflickr.adapter.HotspotAdapter;
-import com.cs550.teama.spotflickr.model.hotspot.Hotspot;
-import com.cs550.teama.spotflickr.model.hotspot.HotspotList;
+import com.cs550.teama.spotflickr.model.Hotspot;
+import com.cs550.teama.spotflickr.model.HotspotList;
 import com.cs550.teama.spotflickr.model.User;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -80,8 +80,8 @@ public class HotspotActivity extends AppCompatActivity implements NavigationView
 
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-        final TextView user_name = navigationView.getHeaderView(0).findViewById(R.id.user_name);
-        final TextView user_email = navigationView.getHeaderView(0).findViewById(R.id.user_email);
+        final TextView user_name = (TextView) navigationView.getHeaderView(0).findViewById(R.id.user_name);
+        final TextView user_email = (TextView) navigationView.getHeaderView(0).findViewById(R.id.user_email);
 
         userDocRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
