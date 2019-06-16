@@ -8,16 +8,12 @@ import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationManager;
 import android.media.Image;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.UiThread;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.FileProvider;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -58,11 +54,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
@@ -92,7 +85,6 @@ public class MapFragmentActivity extends AppCompatActivity implements OnMapReady
     private PathOverlay[] pathes;
     private Marker[] markers;
     private String target_place_id;
-    String currentImagePath = null;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -126,7 +118,6 @@ public class MapFragmentActivity extends AppCompatActivity implements OnMapReady
         photoListButton.setOnClickListener(this);
         routeButton.setOnClickListener(this);
         shortButton.setOnClickListener(this);
-        findViewById(R.id.buttonCamera).setOnClickListener(this);
         lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         this.current_location = new LatLng(location.getLatitude(), location.getLongitude());
@@ -246,36 +237,6 @@ public class MapFragmentActivity extends AppCompatActivity implements OnMapReady
 
     }
 
-    public void captureImage(View view) {
-        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-
-        if (cameraIntent.resolveActivity(getPackageManager()) != null) {
-            File imageFile = null;
-
-            try {
-                imageFile = getImageFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            if (imageFile != null) {
-                Uri imageUri = FileProvider.getUriForFile(this, "com.example.android.fileprovider", imageFile);
-                cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-                startActivityForResult(cameraIntent, 1);
-            }
-        }
-    }
-
-    private File getImageFile() throws IOException{
-        String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageName = "jpg_"+timestamp+"_";
-        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-
-        File imageFile = File.createTempFile(imageName, ".jpg", storageDir);
-        currentImagePath = imageFile.getAbsolutePath();
-        return imageFile;
-    }
-
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
@@ -312,17 +273,11 @@ public class MapFragmentActivity extends AppCompatActivity implements OnMapReady
                 intent.putExtra("latitude",Double.toString(dest_place.latitude));
                 intent.putExtra("longitude",Double.toString(dest_place.longitude));
                 startActivity(intent);
-                break;
             case R.id.route_button:
                 RouteHttpTask task = new RouteHttpTask();
                 task.execute(current_location);
-                break;
             case R.id.short_route_button:
                 mapFragment.getMapAsync(this);
-                break;
-            case R.id.buttonCamera:
-                captureImage(view);
-                break;
 
         }
     }

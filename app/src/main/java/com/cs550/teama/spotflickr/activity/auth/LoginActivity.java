@@ -7,7 +7,6 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -47,7 +46,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         int internetPermission = ContextCompat.checkSelfPermission(this, Manifest.permission.INTERNET);
         int accessFineLocationPermission = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
-        int cameraPermission = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA);
 
         if ( internetPermission == PackageManager.PERMISSION_GRANTED
                 && accessFineLocationPermission == PackageManager.PERMISSION_GRANTED) {
@@ -58,10 +56,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_DENIED) {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 2);
-            }
-
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_DENIED) {
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, 3);
             }
 
             mAuth = FirebaseAuth.getInstance();
@@ -79,11 +73,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     new String[]{Manifest.permission.INTERNET, Manifest.permission.ACCESS_FINE_LOCATION},
                     100);
         }
-    }
-
-    private void dispatchTakePictureIntent(int actionCode) {
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        startActivityForResult(takePictureIntent, actionCode);
     }
 
     private void userLogin() {

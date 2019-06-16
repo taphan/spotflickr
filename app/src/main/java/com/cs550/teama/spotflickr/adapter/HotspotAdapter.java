@@ -13,7 +13,7 @@ import android.widget.TextView;
 
 import com.cs550.teama.spotflickr.R;
 import com.cs550.teama.spotflickr.activity.hotspot.UpdateHotspotActivity;
-import com.cs550.teama.spotflickr.model.hotspot.Hotspot;
+import com.cs550.teama.spotflickr.model.Hotspot;
 
 import java.util.List;
 
@@ -40,8 +40,8 @@ public class HotspotAdapter extends RecyclerView.Adapter<HotspotAdapter.HotspotV
         Hotspot hotspot = hotspotList.get(i);
 
         hotspotViewHolder.textViewName.setText(hotspot.getName());
-        hotspotViewHolder.textViewLatitude.setText("Latitude: "+ hotspot.getLatitude());
-        hotspotViewHolder.textViewLongitude.setText("Longitude: "+ hotspot.getLongitude());
+        hotspotViewHolder.textViewLatitude.setText("Latitude: "+ Float.toString(hotspot.getLatitude()));
+        hotspotViewHolder.textViewLongitude.setText("Longitude: "+ Float.toString(hotspot.getLongitude()));
         hotspotViewHolder.textViewDesc.setText(hotspot.getDescription());
     }
 

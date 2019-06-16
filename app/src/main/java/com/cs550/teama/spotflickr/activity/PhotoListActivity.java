@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
@@ -12,9 +13,10 @@ import android.widget.Toast;
 import com.cs550.teama.spotflickr.R;
 import com.cs550.teama.spotflickr.activity.hotspot.SaveHotspotActivity;
 import com.cs550.teama.spotflickr.adapter.ImageListAdapter;
+import com.cs550.teama.spotflickr.adapter.PhotoAdapter;
 import com.cs550.teama.spotflickr.interfaces.ApiService;
-import com.cs550.teama.spotflickr.model.photo.Photo;
-import com.cs550.teama.spotflickr.model.photo.Photos;
+import com.cs550.teama.spotflickr.model.Photo;
+import com.cs550.teama.spotflickr.model.Photos;
 import com.cs550.teama.spotflickr.model.User;
 import com.cs550.teama.spotflickr.network.RetrofitInstance;
 import com.cs550.teama.spotflickr.services.FlickrApiUrlService;
@@ -34,11 +36,15 @@ import retrofit2.Response;
 
 public class PhotoListActivity extends AppCompatActivity implements View.OnClickListener {
     private static final String TAG = "PhotoListActivity";
+    private static final String API_KEY = "c78af6829b82ef76418e7563ee33fe85";
     private Context context;
     private String place_id;
     private String lat;
     private String lon;
+    private String content;
 
+    private PhotoAdapter adapter;
+    private RecyclerView recyclerView;
     private ListView listView;
 
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -57,6 +63,7 @@ public class PhotoListActivity extends AppCompatActivity implements View.OnClick
 
         /* Get place_id, latitude and longitude coordinates from map*/
         Bundle extras = getIntent().getExtras();
+
         place_id = extras.getString("place_id");
         lat = extras.getString("latitude");
         lon = extras.getString("longitude");
@@ -65,17 +72,16 @@ public class PhotoListActivity extends AppCompatActivity implements View.OnClick
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 if (documentSnapshot.exists()) {
-                    /* Check if user is logged in and has valid oauth token*/
                     current_user = documentSnapshot.toObject(User.class);
                     oauth_token = current_user.getOauth_token();
                     oauth_token_secret = current_user.getOauth_token_secret();
-                    /* Send request to get photos at this location*/
                     sendRequest();
                 }
             }
         });
 
         findViewById(R.id.adding_hotspot).setOnClickListener(this);
+        /* Send request to get photos at this location*/
     }
 
     private void sendRequest() {
@@ -87,11 +93,7 @@ public class PhotoListActivity extends AppCompatActivity implements View.OnClick
             @Override
             public void onResponse(Call<Photos> call, Response<Photos> response) {
                 Log.d(TAG, "Successful sendRequest");
-                if (response.body() != null) {
-                    generatePhotoList(response.body().getPhotos().getPhoto());
-                } else {
-                    Toast.makeText(PhotoListActivity.this, "There is no photo here" , Toast.LENGTH_SHORT).show();
-                }
+                generatePhotoList(response.body().getPhotos().getPhoto());
             }
 
             @Override
@@ -129,16 +131,6 @@ public class PhotoListActivity extends AppCompatActivity implements View.OnClick
         }
         listView = findViewById(R.id.list_view);
         listView.setAdapter(new ImageListAdapter(PhotoListActivity.this, urls));
-        listView.setOnItemClickListener((adapterView, view, position, id) -> {
-            /* Start new page to get more detailed view of photo*/
-            Intent intent = new Intent(PhotoListActivity.this, PhotoDetailActivity.class);
-            Photo photo = photoArrayList.get(position);
-            intent.putExtra("id", photo.getId());
-            intent.putExtra("farm", String.valueOf(photo.getFarm()));
-            intent.putExtra("server", photo.getServer());
-            intent.putExtra("secret", photo.getSecret());
-            startActivity(intent);
-        });
     }
 
     // Build URL in the form: https://farm{farm-id}.staticflickr.com/{server-id}/{id}_{secret}.jpg
@@ -158,12 +150,15 @@ public class PhotoListActivity extends AppCompatActivity implements View.OnClick
 
     @Override
     public void onClick(View v) {
-        if (v.getId() == R.id.adding_hotspot) {
-            Intent intent = new Intent(this, SaveHotspotActivity.class);
-            intent.putExtra("place_id", place_id);
-            intent.putExtra("latitude", lat);
-            intent.putExtra("longitude", lon);
-            startActivity(intent);
+        switch (v.getId()) {
+            case R.id.adding_hotspot:
+                Intent intent = new Intent(this, SaveHotspotActivity.class);
+                intent.putExtra("content", content);
+                intent.putExtra("place_id", place_id);
+                intent.putExtra("latitude", lat);
+                intent.putExtra("longitude", lon);
+                startActivity(intent);
+                break;
         }
     }
 }
