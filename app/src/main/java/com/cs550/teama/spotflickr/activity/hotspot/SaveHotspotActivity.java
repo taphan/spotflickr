@@ -14,14 +14,13 @@ import android.widget.Toast;
 
 import com.cs550.teama.spotflickr.R;
 import com.cs550.teama.spotflickr.activity.PhotoListActivity;
-import com.cs550.teama.spotflickr.model.Hotspot;
-import com.cs550.teama.spotflickr.model.HotspotList;
+import com.cs550.teama.spotflickr.model.hotspot.Hotspot;
+import com.cs550.teama.spotflickr.model.hotspot.HotspotList;
 import com.cs550.teama.spotflickr.model.User;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -62,15 +61,15 @@ public class SaveHotspotActivity extends AppCompatActivity implements View.OnCli
         lat = extras.getString("latitude");
         lon = extras.getString("longitude");
 
-        TextView textView_content = (TextView) findViewById(R.id.textview_content);
-        TextView textView_latitude = (TextView) findViewById(R.id.textview_latitude);
-        TextView textView_longitude = (TextView) findViewById(R.id.textview_longitude);
+        TextView textView_content = findViewById(R.id.textview_content);
+        TextView textView_latitude = findViewById(R.id.textview_latitude);
+        TextView textView_longitude = findViewById(R.id.textview_longitude);
 
         textView_content.setText(content);
         textView_latitude.setText("Latitude: " + lat);
         textView_longitude.setText("Longitude: " + lon);
 
-        spinner = (Spinner) findViewById(R.id.spinner_hotspot_list);
+        spinner = findViewById(R.id.spinner_hotspot_list);
         hotspot_list_name = new ArrayList<String>();
         hotspot_list_id = new ArrayList<String>();
         adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_item, hotspot_list_name);

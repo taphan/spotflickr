@@ -21,7 +21,6 @@ import android.widget.Toast;
 import com.cs550.teama.spotflickr.R;
 import com.cs550.teama.spotflickr.activity.MapFragmentActivity;
 import com.cs550.teama.spotflickr.activity.user.UserProfileFragmentActivity;
-import com.cs550.teama.spotflickr.model.HotspotList;
 import com.cs550.teama.spotflickr.model.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -57,8 +56,8 @@ public class DeleteAccountActivity extends AppCompatActivity implements View.OnC
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_delete_account);
 
-        editTextPassword = (EditText) findViewById(R.id.editTextPassword);
-        progressBar = (ProgressBar) findViewById(R.id.progressbar);
+        editTextPassword = findViewById(R.id.editTextPassword);
+        progressBar = findViewById(R.id.progressbar);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle("Check Current User's Password");
@@ -73,8 +72,8 @@ public class DeleteAccountActivity extends AppCompatActivity implements View.OnC
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        final TextView nav_user_name = (TextView) navigationView.getHeaderView(0).findViewById(R.id.user_name);
-        final TextView nav_user_email = (TextView) navigationView.getHeaderView(0).findViewById(R.id.user_email);
+        final TextView nav_user_name = navigationView.getHeaderView(0).findViewById(R.id.user_name);
+        final TextView nav_user_email = navigationView.getHeaderView(0).findViewById(R.id.user_email);
 
         documentReference.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
