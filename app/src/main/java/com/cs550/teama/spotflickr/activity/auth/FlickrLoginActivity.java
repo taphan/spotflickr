@@ -24,12 +24,13 @@ import java.util.Map;
 
 public class FlickrLoginActivity extends AppCompatActivity implements LoginObserver {
     final static String TAG = "FlickrLoginActivity";
-    WebView webView;
+    public WebView webView;
     ProgressBar progressBar_cyclic;
     SwipeRefreshLayout swipe;
-    OAuthService oauth;
     Toolbar toolbar;
+    public OAuthService oauth;
 
+    @SuppressLint("SetJavaScriptEnabled")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,25 +45,23 @@ public class FlickrLoginActivity extends AppCompatActivity implements LoginObser
         progressBar_cyclic.setVisibility(View.GONE);
 
         swipe = findViewById(R.id.swipe);
-        swipe.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                if (!oauth.getAuthorizationURL().isEmpty())
-                    WebAction(oauth.getAuthorizationURL());
-            }
+        swipe.setOnRefreshListener(() -> {
+            if (!oauth.getAuthorizationURL().isEmpty())
+                WebAction(oauth.getAuthorizationURL());
         });
 
-        oauth = new OAuthService(this);
-    }
-
-
-    @SuppressLint("SetJavaScriptEnabled")
-    public void WebAction(String loginUrl){
+        // Set settings for the webView
         WebSettings settings = webView.getSettings();
         settings.setJavaScriptEnabled(true);
         settings.setAppCacheEnabled(true);
         settings.setDomStorageEnabled(true);
 
+        // Get authorization token and run
+        oauth = new OAuthService(this);
+    }
+
+
+    public void WebAction(String loginUrl){
         webView.loadUrl(loginUrl);
         swipe.setRefreshing(true);
         webView.setWebViewClient(new WebViewClient(){
@@ -106,7 +105,6 @@ public class FlickrLoginActivity extends AppCompatActivity implements LoginObser
 
     @Override
     public void onBackPressed(){
-
         if (webView.canGoBack()){
             webView.goBack();
         } else {
@@ -119,7 +117,6 @@ public class FlickrLoginActivity extends AppCompatActivity implements LoginObser
     public void onRequestTokenReceived(OAuthService oauth) {
         String url = oauth.getAuthorizationURL();
         WebAction(url);
-
     }
 
     @Override
