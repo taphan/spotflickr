@@ -1,23 +1,23 @@
-package com.cs550.teama.spotflickr.model;
+package com.cs550.teama.spotflickr.model.photo;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Photos {
+public class PhotoDetail {
 
-    @SerializedName("photos")
+    @SerializedName("photo")
     @Expose
-    private PhotosDetails photos;
+    private PhotoInfo photo;
     @SerializedName("stat")
     @Expose
     private String stat;
 
-    public PhotosDetails getPhotos() {
-        return photos;
+    public PhotoInfo getPhoto() {
+        return photo;
     }
 
-    public void setPhotos(PhotosDetails photos) {
-        this.photos = photos;
+    public void setPhoto(PhotoInfo photo) {
+        this.photo = photo;
     }
 
     public String getStat() {

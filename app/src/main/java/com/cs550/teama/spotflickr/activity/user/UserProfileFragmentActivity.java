@@ -21,16 +21,12 @@ import android.widget.Toast;
 import com.cs550.teama.spotflickr.activity.MapFragmentActivity;
 import com.cs550.teama.spotflickr.activity.auth.CurrentUserPasswordActivity;
 import com.cs550.teama.spotflickr.activity.auth.DeleteAccountActivity;
-import com.cs550.teama.spotflickr.activity.auth.LoginActivity;
-import com.cs550.teama.spotflickr.activity.auth.ChangePasswordActivity;
 import com.cs550.teama.spotflickr.activity.hotspot.HotspotListActivity;
-import com.cs550.teama.spotflickr.model.HotspotList;
+import com.cs550.teama.spotflickr.model.hotspot.HotspotList;
 import com.cs550.teama.spotflickr.R;
 import com.cs550.teama.spotflickr.model.User;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
@@ -90,12 +86,12 @@ public class UserProfileFragmentActivity extends AppCompatActivity implements Vi
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        final TextView nav_user_name = (TextView) navigationView.getHeaderView(0).findViewById(R.id.user_name);
-        final TextView nav_user_email = (TextView) navigationView.getHeaderView(0).findViewById(R.id.user_email);
+        final TextView nav_user_name = navigationView.getHeaderView(0).findViewById(R.id.user_name);
+        final TextView nav_user_email = navigationView.getHeaderView(0).findViewById(R.id.user_email);
 
-        user_name = (TextView) findViewById(R.id.user_name);
-        user_email = (TextView) findViewById(R.id.user_email);
-        progressBar = (ProgressBar) findViewById(R.id.progressbar);
+        user_name = findViewById(R.id.user_name);
+        user_email = findViewById(R.id.user_email);
+        progressBar = findViewById(R.id.progressbar);
 
         userDocRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override

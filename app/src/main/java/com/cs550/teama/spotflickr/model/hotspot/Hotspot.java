@@ -1,4 +1,4 @@
-package com.cs550.teama.spotflickr.model;
+package com.cs550.teama.spotflickr.model.hotspot;
 
 import com.google.firebase.firestore.Exclude;
 
