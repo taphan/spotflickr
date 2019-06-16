@@ -21,7 +21,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class PhotoDetailActivity extends AppCompatActivity {
+public class  PhotoDetailActivity extends AppCompatActivity {
     private static final String TAG = "PhotoDetailActivity";
     private final static String API_KEY = App.getContext().getString(R.string.flickr_api_key);
     private String photo_id;
