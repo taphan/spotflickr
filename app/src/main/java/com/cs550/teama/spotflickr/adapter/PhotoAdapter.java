@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.cs550.teama.spotflickr.R;
-import com.cs550.teama.spotflickr.model.Photo;
+import com.cs550.teama.spotflickr.model.photo.Photo;
 
 import java.util.ArrayList;
 

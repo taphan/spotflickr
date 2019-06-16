@@ -13,7 +13,7 @@ import android.widget.Toast;
 
 import com.cs550.teama.spotflickr.R;
 import com.cs550.teama.spotflickr.activity.MapFragmentActivity;
-import com.cs550.teama.spotflickr.model.HotspotList;
+import com.cs550.teama.spotflickr.model.hotspot.HotspotList;
 import com.cs550.teama.spotflickr.model.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
